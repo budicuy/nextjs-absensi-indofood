@@ -1,100 +1,79 @@
 "use client";
 
-import {
-    AlertTriangle,
-    ChevronLeft,
-    ChevronRight,
-    Clock,
-    ListFilter,
-    Pencil,
-    Plus,
-    Search,
-    Trash2,
-    X,
-} from "lucide-react";
+import { Clock, ListFilter, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { deleteJamKerja, getJamKerja } from "@/app/actions/jamKerja";
+import DeleteConfirmationModal from "@/app/components/DataTable/DeleteConfirmationModal";
+import FilterSelect from "@/app/components/DataTable/FilterSelect";
+import PageHeader from "@/app/components/DataTable/PageHeader";
+import Pagination from "@/app/components/DataTable/Pagination";
+import SearchBar from "@/app/components/DataTable/SearchBar";
+import { useDeleteModal } from "@/hooks/useDeleteModal";
+import { usePagination } from "@/hooks/usePagination";
+import type { JamKerjaModel } from "@/lib/generated/prisma/models/JamKerja";
 import JamKerjaModal from "./JamKerjaModal";
 
-type JamKerjaType = {
-    id: number;
-    kodeShift: string;
-    jamMasuk: Date;
-    jamPulang: Date;
-    createdAt: Date;
-    updatedAt: Date;
-};
-
 type Props = {
-    initialJamKerja: JamKerjaType[];
+    initialJamKerja: JamKerjaModel[];
 };
 
 export default function JamKerjaClient({ initialJamKerja }: Props) {
     const [jamKerjaList, setJamKerjaList] =
-        useState<JamKerjaType[]>(initialJamKerja);
+        useState<JamKerjaModel[]>(initialJamKerja);
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [jamKerjaToDelete, setJamKerjaToDelete] = useState<{
-        id: number;
-        kodeShift: string;
-    } | null>(null);
     const [selectedJamKerja, setSelectedJamKerja] =
-        useState<JamKerjaType | null>(null);
-    const [currentPage, setCurrentPage] = useState(1);
+        useState<JamKerjaModel | null>(null);
 
     // Filter jam kerja berdasarkan search query
     const filteredJamKerja = jamKerjaList.filter((jamKerja) => {
-        const matchesSearch = jamKerja.kodeShift
+        return jamKerja.kodeShift
             .toLowerCase()
             .includes(searchQuery.toLowerCase());
-
-        return matchesSearch;
     });
 
-    // Pagination
-    const totalPages = Math.ceil(filteredJamKerja.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentJamKerja = filteredJamKerja.slice(startIndex, endIndex);
+    // Use custom hooks
+    const pagination = usePagination({
+        data: filteredJamKerja,
+        itemsPerPage,
+    });
+
+    const deleteModal = useDeleteModal();
 
     const handleAddClick = () => {
         setSelectedJamKerja(null);
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (jamKerja: JamKerjaType) => {
+    const handleEditClick = (jamKerja: JamKerjaModel) => {
         setSelectedJamKerja(jamKerja);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async (jamKerja: JamKerjaType) => {
-        setJamKerjaToDelete({ id: jamKerja.id, kodeShift: jamKerja.kodeShift });
-        setIsDeleteModalOpen(true);
+    const handleDeleteClick = async (jamKerja: JamKerjaModel) => {
+        deleteModal.openDeleteModal({
+            id: jamKerja.id,
+            name: jamKerja.kodeShift,
+        });
     };
 
     const confirmDelete = async () => {
-        if (!jamKerjaToDelete) return;
+        if (!deleteModal.itemToDelete) return;
 
-        const result = await deleteJamKerja(jamKerjaToDelete.id);
+        const result = await deleteJamKerja(deleteModal.itemToDelete.id);
         if (result.success) {
             toast.success(result.message || "Jam kerja berhasil dihapus");
             setJamKerjaList(
-                jamKerjaList.filter((jk) => jk.id !== jamKerjaToDelete.id),
+                jamKerjaList.filter(
+                    (jk) => jk.id !== deleteModal.itemToDelete?.id,
+                ),
             );
+            deleteModal.closeDeleteModal();
         } else {
             toast.error(result.error || "Gagal menghapus jam kerja");
         }
-
-        setIsDeleteModalOpen(false);
-        setJamKerjaToDelete(null);
-    };
-
-    const cancelDelete = () => {
-        setIsDeleteModalOpen(false);
-        setJamKerjaToDelete(null);
     };
 
     // Format time to HH:MM
@@ -128,7 +107,7 @@ export default function JamKerjaClient({ initialJamKerja }: Props) {
         return colors[index];
     };
 
-    const handleModalClose = async (updatedData?: JamKerjaType) => {
+    const handleModalClose = async (updatedData?: JamKerjaModel) => {
         setIsModalOpen(false);
         setSelectedJamKerja(null);
 
@@ -147,87 +126,48 @@ export default function JamKerjaClient({ initialJamKerja }: Props) {
 
     return (
         <div className="p-6">
-            {/* Header with Gradient Background */}
-            <div className="mb-6 bg-linear-to-r from-(--primary-hover) to-(--primary-color) rounded-xl p-6 shadow-lg">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold text-white">
-                            Data Jam Kerja
-                        </h1>
-                        <p className="text-(--primary-light) mt-2">
-                            Kelola data jam kerja sistem Absensi Indofood
-                        </p>
-                    </div>
-                    <button
-                        type="button"
-                        onClick={handleAddClick}
-                        className="flex items-center gap-2 px-5 py-3 bg-white text-(--primary-color) rounded-lg hover:bg-(--primary-light) transition-all shadow-md hover:shadow-lg font-semibold"
-                    >
-                        <Plus className="w-5 h-5" />
-                        <span className="hidden sm:inline">
-                            Tambah Jam Kerja
-                        </span>
-                        <span className="sm:hidden">Tambah</span>
-                    </button>
-                </div>
-            </div>
+            {/* Header */}
+            <PageHeader
+                title="Data Jam Kerja"
+                description="Kelola data jam kerja sistem Absensi Indofood"
+                onAddClick={handleAddClick}
+                addButtonText="Tambah Jam Kerja"
+                icon={Clock}
+            />
 
             {/* Table with Integrated Filters */}
             <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                 {/* Filters Section Inside Card */}
                 <div className="p-6 bg-gray-50 border-b border-gray-200">
                     {/* Search Bar */}
-                    <div className="mb-4">
-                        <label
-                            htmlFor="search-jam-kerja"
-                            className="block text-sm font-semibold text-gray-700 mb-2"
-                        >
-                            Pencarian
-                        </label>
-                        <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <input
-                                type="text"
-                                id="search-jam-kerja"
-                                placeholder="Cari berdasarkan kode shift..."
-                                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color) focus:border-transparent transition-all bg-white"
-                                value={searchQuery}
-                                onChange={(e) => {
-                                    setSearchQuery(e.target.value);
-                                    setCurrentPage(1);
-                                }}
-                            />
-                        </div>
-                    </div>
+                    <SearchBar
+                        id="search-jam-kerja"
+                        placeholder="Cari berdasarkan kode shift..."
+                        value={searchQuery}
+                        onChange={(value) => {
+                            setSearchQuery(value);
+                            pagination.setCurrentPage(1);
+                        }}
+                    />
 
                     {/* Items Per Page */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label
-                                htmlFor="items-per-page"
-                                className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"
-                            >
-                                <ListFilter className="w-4 h-4 text-(--primary-color)" />
-                                Tampilkan
-                            </label>
-                            <div className="relative">
-                                <ListFilter className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                <select
-                                    id="items-per-page"
-                                    value={itemsPerPage}
-                                    onChange={(e) => {
-                                        setItemsPerPage(Number(e.target.value));
-                                        setCurrentPage(1);
-                                    }}
-                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color) focus:border-transparent transition-all bg-white appearance-none"
-                                >
-                                    <option value={50}>50 per halaman</option>
-                                    <option value={100}>100 per halaman</option>
-                                    <option value={150}>150 per halaman</option>
-                                    <option value={200}>200 per halaman</option>
-                                </select>
-                            </div>
-                        </div>
+                        <FilterSelect
+                            id="items-per-page"
+                            label="Tampilkan"
+                            value={itemsPerPage.toString()}
+                            onChange={(value) => {
+                                setItemsPerPage(Number(value));
+                                pagination.setCurrentPage(1);
+                            }}
+                            options={[
+                                { value: "50", label: "50 per halaman" },
+                                { value: "100", label: "100 per halaman" },
+                                { value: "150", label: "150 per halaman" },
+                                { value: "200", label: "200 per halaman" },
+                            ]}
+                            icon={ListFilter}
+                        />
                     </div>
                 </div>
 
@@ -257,7 +197,7 @@ export default function JamKerjaClient({ initialJamKerja }: Props) {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {currentJamKerja.length === 0 ? (
+                            {pagination.currentData.length === 0 ? (
                                 <tr>
                                     <td
                                         colSpan={6}
@@ -267,7 +207,7 @@ export default function JamKerjaClient({ initialJamKerja }: Props) {
                                     </td>
                                 </tr>
                             ) : (
-                                currentJamKerja.map((jamKerja) => (
+                                pagination.currentData.map((jamKerja) => (
                                     <tr
                                         key={jamKerja.id}
                                         className="hover:bg-gray-50 transition-colors"
@@ -366,183 +306,34 @@ export default function JamKerjaClient({ initialJamKerja }: Props) {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="text-sm text-gray-600">
-                            Menampilkan {startIndex + 1} -{" "}
-                            {Math.min(endIndex, filteredJamKerja.length)} dari{" "}
-                            {filteredJamKerja.length} jam kerja
-                        </div>
-                        <div className="flex gap-1">
-                            {/* Previous Button */}
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className="px-3 py-1.5 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors flex items-center gap-1"
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                                <span className="hidden sm:inline">
-                                    Previous
-                                </span>
-                            </button>
-
-                            {/* Page Numbers with Ellipsis */}
-                            {(() => {
-                                const pages: (number | string)[] = [];
-                                const delta = 1; // Number of pages to show around current page
-
-                                // Always show first page
-                                pages.push(1);
-
-                                // Calculate range around current page
-                                const rangeStart = Math.max(
-                                    2,
-                                    currentPage - delta,
-                                );
-                                const rangeEnd = Math.min(
-                                    totalPages - 1,
-                                    currentPage + delta,
-                                );
-
-                                // Add ellipsis after first page if needed
-                                if (rangeStart > 2) {
-                                    pages.push("ellipsis-start");
-                                }
-
-                                // Add pages around current page
-                                for (let i = rangeStart; i <= rangeEnd; i++) {
-                                    pages.push(i);
-                                }
-
-                                // Add ellipsis before last page if needed
-                                if (rangeEnd < totalPages - 1) {
-                                    pages.push("ellipsis-end");
-                                }
-
-                                // Always show last page (if more than 1 page)
-                                if (totalPages > 1) {
-                                    pages.push(totalPages);
-                                }
-
-                                return pages.map((page) => {
-                                    if (typeof page === "string") {
-                                        return (
-                                            <span
-                                                key={page}
-                                                className="px-3 py-1.5 text-gray-400"
-                                            >
-                                                ...
-                                            </span>
-                                        );
-                                    }
-
-                                    return (
-                                        <button
-                                            type="button"
-                                            key={page}
-                                            onClick={() => setCurrentPage(page)}
-                                            className={`px-3 py-1.5 rounded-lg transition-colors min-w-10 ${
-                                                currentPage === page
-                                                    ? "bg-(--primary-color) text-white shadow-sm"
-                                                    : "border border-gray-300 hover:bg-gray-50"
-                                            }`}
-                                        >
-                                            {page}
-                                        </button>
-                                    );
-                                });
-                            })()}
-
-                            {/* Next Button */}
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className="px-3 py-1.5 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors flex items-center gap-1"
-                            >
-                                <span className="hidden sm:inline">Next</span>
-                                <ChevronRight className="h-4 w-4" />
-                            </button>
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    currentPage={pagination.currentPage}
+                    totalPages={pagination.totalPages}
+                    totalItems={filteredJamKerja.length}
+                    startIndex={pagination.startIndex}
+                    endIndex={pagination.endIndex}
+                    onPageChange={pagination.setCurrentPage}
+                    onNextPage={pagination.goToNextPage}
+                    onPreviousPage={pagination.goToPreviousPage}
+                    canGoNext={pagination.canGoNext}
+                    canGoPrevious={pagination.canGoPrevious}
+                />
             </div>
 
-            {/* Modal */}
+            {/* Modals */}
             <JamKerjaModal
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
                 jamKerja={selectedJamKerja}
             />
 
-            {/* Delete Confirmation Modal */}
-            {isDeleteModalOpen && jamKerjaToDelete && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    {/* Backdrop */}
-                    <button
-                        type="button"
-                        className="absolute inset-0 bg-black/50 cursor-default"
-                        onClick={cancelDelete}
-                        aria-label="Close modal"
-                    />
-
-                    {/* Modal */}
-                    <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-                        {/* Header with Red Background */}
-                        <div className="bg-red-600 px-6 py-4 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="bg-white/20 p-2 rounded-lg">
-                                    <AlertTriangle className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">
-                                    Konfirmasi Hapus
-                                </h3>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={cancelDelete}
-                                className="text-white hover:bg-white/20 rounded-lg p-1 transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        {/* Content */}
-                        <div className="p-6">
-                            <p className="text-gray-700 mb-2">
-                                Apakah Anda yakin ingin menghapus jam kerja:
-                            </p>
-                            <p className="text-lg font-semibold text-gray-900 mb-4">
-                                {jamKerjaToDelete.kodeShift}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                Data yang sudah dihapus tidak dapat
-                                dikembalikan.
-                            </p>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="bg-gray-50 px-6 py-4 flex gap-3 justify-end">
-                            <button
-                                type="button"
-                                onClick={cancelDelete}
-                                className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                type="button"
-                                onClick={confirmDelete}
-                                className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm flex items-center gap-2"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                                Hapus
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <DeleteConfirmationModal
+                isOpen={deleteModal.isDeleteModalOpen}
+                itemName={deleteModal.itemToDelete?.name || ""}
+                itemType="jam kerja"
+                onConfirm={confirmDelete}
+                onCancel={deleteModal.closeDeleteModal}
+            />
         </div>
     );
 }
