@@ -9,8 +9,11 @@ export const prisma =
     new PrismaClient({
         log:
             process.env.NODE_ENV === "development"
-                ? ["query", "error", "warn"]
-                : ["error"],
+                ? [
+                      { level: "query", emit: "event" }, // Untuk melihat setiap SQL query yang dieksekusi
+                      { level: "error", emit: "stdout" },
+                      { level: "warn", emit: "stdout" },
+                  ] : ["error"],
     });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

@@ -23,9 +23,25 @@ export type DepartemenOption = {
     namaDepartemen?: string;
 };
 
-// Type untuk Vendor dengan alias  
+// Type untuk Vendor dengan alias
 export type VendorOption = {
     id: number;
     nama?: string;
     namaVendor?: string;
+};
+
+// Type untuk Gaji Pokok dengan relasi
+export type GajiPokokWithRelations = {
+    id: number;
+    jumlahGaji: number;
+    karyawan: { id: number; nik: string; nama: string } | null;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+// Type untuk Karyawan Option (digunakan di dropdown)
+export type KaryawanOption = {
+    id: number;
+    nik: string;
+    nama: string;
 };
