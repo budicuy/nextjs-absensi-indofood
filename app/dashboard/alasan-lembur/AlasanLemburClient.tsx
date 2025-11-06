@@ -14,7 +14,7 @@ import Pagination from "@/app/components/DataTable/Pagination";
 import SearchBar from "@/app/components/DataTable/SearchBar";
 import { useDeleteModal } from "@/hooks/useDeleteModal";
 import { usePagination } from "@/hooks/usePagination";
-import type { AlasanLemburModel } from "@/lib/generated/prisma/models/AlasanLembur";
+import type { AlasanLemburModel } from "@/lib/generated/prisma/models";
 import AlasanLemburModal from "./AlasanLemburModal";
 
 type Props = {

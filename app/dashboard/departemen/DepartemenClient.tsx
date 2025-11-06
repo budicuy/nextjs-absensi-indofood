@@ -11,7 +11,7 @@ import Pagination from "@/app/components/DataTable/Pagination";
 import SearchBar from "@/app/components/DataTable/SearchBar";
 import { useDeleteModal } from "@/hooks/useDeleteModal";
 import { usePagination } from "@/hooks/usePagination";
-import type { DepartemenModel } from "@/lib/generated/prisma/models/Departemen";
+import type { DepartemenModel } from "@/lib/generated/prisma/models";
 import { getAvatarColor, getInitials } from "@/lib/utils/avatar";
 import DepartemenModal from "./DepartemenModal";
 
