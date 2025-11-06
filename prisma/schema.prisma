@@ -7,7 +7,7 @@
 generator client {
   provider               = "prisma-client"
   output                 = "../lib/generated/prisma"
-  runtime                = "nodejs"
+  runtime                = "vercel-edge"
   importFileExtension    = "ts"
   generatedFileExtension = "ts"
   moduleFormat           = "esm"
