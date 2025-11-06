@@ -5,12 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider               = "prisma-client"
-  output                 = "../lib/generated/prisma"
-  runtime                = "vercel-edge"
-  importFileExtension    = "ts"
-  generatedFileExtension = "ts"
-  moduleFormat           = "esm"
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+  runtime  = "vercel-edge"
 }
 
 datasource db {
