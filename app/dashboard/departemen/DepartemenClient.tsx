@@ -1,5 +1,6 @@
 "use client";
 
+import type { Departemen } from "@prisma/client";
 import { Building2, ListFilter, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -11,22 +12,21 @@ import Pagination from "@/app/components/DataTable/Pagination";
 import SearchBar from "@/app/components/DataTable/SearchBar";
 import { useDeleteModal } from "@/hooks/useDeleteModal";
 import { usePagination } from "@/hooks/usePagination";
-import type { DepartemenModel } from "@/lib/generated/prisma/models";
 import { getAvatarColor, getInitials } from "@/lib/utils/avatar";
 import DepartemenModal from "./DepartemenModal";
 
 type Props = {
-    initialDepartemen: DepartemenModel[];
+    initialDepartemen: Departemen[];
 };
 
 export default function DepartemenClient({ initialDepartemen }: Props) {
     const [departemenList, setDepartemenList] =
-        useState<DepartemenModel[]>(initialDepartemen);
+        useState<Departemen[]>(initialDepartemen);
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDepartemen, setSelectedDepartemen] =
-        useState<DepartemenModel | null>(null);
+        useState<Departemen | null>(null);
 
     // Filter departemen berdasarkan search query
     const filteredDepartemen = departemenList.filter((departemen) => {
@@ -48,12 +48,12 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (departemen: DepartemenModel) => {
+    const handleEditClick = (departemen: Departemen) => {
         setSelectedDepartemen(departemen);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = (departemen: DepartemenModel) => {
+    const handleDeleteClick = (departemen: Departemen) => {
         deleteModal.openDeleteModal({
             id: departemen.id,
             name: departemen.namaDepartemen,
@@ -77,7 +77,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
         }
     };
 
-    const handleModalClose = async (updatedData?: DepartemenModel) => {
+    const handleModalClose = async (updatedData?: Departemen) => {
         setIsModalOpen(false);
         setSelectedDepartemen(null);
 

@@ -1,5 +1,6 @@
 "use client";
 
+import type { AlasanLembur } from "@prisma/client";
 import { FileText, ListFilter, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -14,21 +15,20 @@ import Pagination from "@/app/components/DataTable/Pagination";
 import SearchBar from "@/app/components/DataTable/SearchBar";
 import { useDeleteModal } from "@/hooks/useDeleteModal";
 import { usePagination } from "@/hooks/usePagination";
-import type { AlasanLemburModel } from "@/lib/generated/prisma/models";
 import AlasanLemburModal from "./AlasanLemburModal";
 
 type Props = {
-    initialData: AlasanLemburModel[];
+    initialData: AlasanLembur[];
 };
 
 export default function AlasanLemburClient({ initialData }: Props) {
     const [alasanLemburList, setAlasanLemburList] =
-        useState<AlasanLemburModel[]>(initialData);
+        useState<AlasanLembur[]>(initialData);
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAlasanLembur, setSelectedAlasanLembur] =
-        useState<AlasanLemburModel | null>(null);
+        useState<AlasanLembur | null>(null);
 
     // Filter alasan lembur berdasarkan search query
     const filteredAlasanLembur = alasanLemburList.filter((alasan) => {
@@ -50,12 +50,12 @@ export default function AlasanLemburClient({ initialData }: Props) {
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (alasan: AlasanLemburModel) => {
+    const handleEditClick = (alasan: AlasanLembur) => {
         setSelectedAlasanLembur(alasan);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = (alasan: AlasanLemburModel) => {
+    const handleDeleteClick = (alasan: AlasanLembur) => {
         deleteModal.openDeleteModal({
             id: alasan.id,
             name: alasan.description,
@@ -102,7 +102,7 @@ export default function AlasanLemburClient({ initialData }: Props) {
         return colors[index];
     };
 
-    const handleModalClose = async (updatedData?: AlasanLemburModel) => {
+    const handleModalClose = async (updatedData?: AlasanLembur) => {
         setIsModalOpen(false);
         setSelectedAlasanLembur(null);
 

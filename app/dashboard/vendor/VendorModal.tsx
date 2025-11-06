@@ -4,12 +4,12 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createVendor, updateVendor } from "@/app/actions/vendor";
-import type { VendorModel } from "@/lib/generated/prisma/models/Vendor";
+import type { Vendor } from "@/lib/generated/prisma/models/Vendor";
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: VendorModel) => void;
-    vendor: VendorModel | null;
+    onClose: (updatedData?: Vendor) => void;
+    vendor: Vendor | null;
 };
 
 export default function VendorModal({ isOpen, onClose, vendor }: Props) {
@@ -55,7 +55,7 @@ export default function VendorModal({ isOpen, onClose, vendor }: Props) {
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as VendorModel);
+                onClose({} as Vendor);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }

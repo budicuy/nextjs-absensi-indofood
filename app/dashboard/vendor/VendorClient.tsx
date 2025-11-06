@@ -1,5 +1,6 @@
 "use client";
 
+import type { Vendor } from "@prisma/client";
 import {
     ListFilter,
     MapPin,
@@ -18,22 +19,19 @@ import Pagination from "@/app/components/DataTable/Pagination";
 import SearchBar from "@/app/components/DataTable/SearchBar";
 import { useDeleteModal } from "@/hooks/useDeleteModal";
 import { usePagination } from "@/hooks/usePagination";
-import type { VendorModel } from "@/lib/generated/prisma/models";
 import { getAvatarColor, getInitials } from "@/lib/utils/avatar";
 import VendorModal from "./VendorModal";
 
 type Props = {
-    initialVendors: VendorModel[];
+    initialVendors: Vendor[];
 };
 
 export default function VendorClient({ initialVendors }: Props) {
-    const [vendorList, setVendorList] = useState<VendorModel[]>(initialVendors);
+    const [vendorList, setVendorList] = useState<Vendor[]>(initialVendors);
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedVendor, setSelectedVendor] = useState<VendorModel | null>(
-        null,
-    );
+    const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
 
     // Filter vendors berdasarkan search query
     const filteredVendors = vendorList.filter((vendor) => {
@@ -59,12 +57,12 @@ export default function VendorClient({ initialVendors }: Props) {
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (vendor: VendorModel) => {
+    const handleEditClick = (vendor: Vendor) => {
         setSelectedVendor(vendor);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = (vendor: VendorModel) => {
+    const handleDeleteClick = (vendor: Vendor) => {
         deleteModal.openDeleteModal({
             id: vendor.id,
             name: vendor.namaVendor,
@@ -86,7 +84,7 @@ export default function VendorClient({ initialVendors }: Props) {
         }
     };
 
-    const handleModalClose = async (updatedData?: VendorModel) => {
+    const handleModalClose = async (updatedData?: Vendor) => {
         setIsModalOpen(false);
         setSelectedVendor(null);
 

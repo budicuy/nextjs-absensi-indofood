@@ -4,12 +4,12 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createJamKerja, updateJamKerja } from "@/app/actions/jamKerja";
-import type { JamKerjaModel } from "@/lib/generated/prisma/models/JamKerja";
+import type { JamKerja } from "@/lib/generated/prisma/models/JamKerja";
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: JamKerjaModel) => void;
-    jamKerja: JamKerjaModel | null;
+    onClose: (updatedData?: JamKerja) => void;
+    jamKerja: JamKerja | null;
 };
 
 export default function JamKerjaModal({ isOpen, onClose, jamKerja }: Props) {
@@ -63,7 +63,7 @@ export default function JamKerjaModal({ isOpen, onClose, jamKerja }: Props) {
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as JamKerjaModel);
+                onClose({} as JamKerja);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }

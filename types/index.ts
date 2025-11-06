@@ -1,5 +1,5 @@
 // Shared types untuk aplikasi
-import type { UserModel } from "@/lib/generated/prisma/models/User";
+import type { User } from "@prisma/client";
 
 // Type untuk Karyawan dengan relasi (digunakan di Client dan Modal)
 export type KaryawanWithRelations = {
@@ -14,7 +14,7 @@ export type KaryawanWithRelations = {
 };
 
 // Type untuk User display (tanpa password)
-export type UserDisplay = Omit<UserModel, "password">;
+export type UserDisplay = Omit<User, "password">;
 
 // Type untuk Departemen dengan alias
 export type DepartemenOption = {

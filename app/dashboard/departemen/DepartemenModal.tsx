@@ -1,15 +1,15 @@
 "use client";
 
+import type { Departemen } from "@prisma/client";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createDepartemen, updateDepartemen } from "@/app/actions/departemen";
-import type { DepartemenModel } from "@/lib/generated/prisma/models/Departemen";
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: DepartemenModel) => void;
-    departemen: DepartemenModel | null;
+    onClose: (updatedData?: Departemen) => void;
+    departemen: Departemen | null;
 };
 
 export default function DepartemenModal({
@@ -51,7 +51,7 @@ export default function DepartemenModal({
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as DepartemenModel);
+                onClose({} as Departemen);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }

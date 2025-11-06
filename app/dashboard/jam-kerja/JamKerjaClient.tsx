@@ -1,5 +1,6 @@
 "use client";
 
+import type { JamKerja } from "@prisma/client";
 import { Clock, ListFilter, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -11,21 +12,21 @@ import Pagination from "@/app/components/DataTable/Pagination";
 import SearchBar from "@/app/components/DataTable/SearchBar";
 import { useDeleteModal } from "@/hooks/useDeleteModal";
 import { usePagination } from "@/hooks/usePagination";
-import type { JamKerjaModel } from "@/lib/generated/prisma/models/JamKerja";
 import JamKerjaModal from "./JamKerjaModal";
 
 type Props = {
-    initialJamKerja: JamKerjaModel[];
+    initialJamKerja: JamKerja[];
 };
 
 export default function JamKerjaClient({ initialJamKerja }: Props) {
     const [jamKerjaList, setJamKerjaList] =
-        useState<JamKerjaModel[]>(initialJamKerja);
+        useState<JamKerja[]>(initialJamKerja);
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedJamKerja, setSelectedJamKerja] =
-        useState<JamKerjaModel | null>(null);
+    const [selectedJamKerja, setSelectedJamKerja] = useState<JamKerja | null>(
+        null,
+    );
 
     // Filter jam kerja berdasarkan search query
     const filteredJamKerja = jamKerjaList.filter((jamKerja) => {
@@ -47,12 +48,12 @@ export default function JamKerjaClient({ initialJamKerja }: Props) {
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (jamKerja: JamKerjaModel) => {
+    const handleEditClick = (jamKerja: JamKerja) => {
         setSelectedJamKerja(jamKerja);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async (jamKerja: JamKerjaModel) => {
+    const handleDeleteClick = async (jamKerja: JamKerja) => {
         deleteModal.openDeleteModal({
             id: jamKerja.id,
             name: jamKerja.kodeShift,
@@ -107,7 +108,7 @@ export default function JamKerjaClient({ initialJamKerja }: Props) {
         return colors[index];
     };
 
-    const handleModalClose = async (updatedData?: JamKerjaModel) => {
+    const handleModalClose = async (updatedData?: JamKerja) => {
         setIsModalOpen(false);
         setSelectedJamKerja(null);
 

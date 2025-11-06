@@ -7,12 +7,12 @@ import {
     createAlasanLembur,
     updateAlasanLembur,
 } from "@/app/actions/alasanLembur";
-import type { AlasanLemburModel } from "@/lib/generated/prisma/models/AlasanLembur";
+import type { AlasanLembur } from "@/lib/generated/prisma/models/AlasanLembur";
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: AlasanLemburModel) => void;
-    alasanLembur: AlasanLemburModel | null;
+    onClose: (updatedData?: AlasanLembur) => void;
+    alasanLembur: AlasanLembur | null;
 };
 
 export default function AlasanLemburModal({
@@ -54,7 +54,7 @@ export default function AlasanLemburModal({
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as AlasanLemburModel);
+                onClose({} as AlasanLembur);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }
