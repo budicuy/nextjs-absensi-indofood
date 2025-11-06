@@ -59,7 +59,7 @@ export default function LoginForm() {
                 type="text"
                 required
                 minLength={3}
-                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-(--primary-color) focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                 placeholder="Masukkan username"
                 disabled={isPending}
               />
@@ -78,7 +78,7 @@ export default function LoginForm() {
                 type="password"
                 required
                 minLength={6}
-                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-(--primary-color) focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                 placeholder="Masukkan password"
                 disabled={isPending}
               />
@@ -88,7 +88,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full rounded-md bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-md bg-(--primary-color) px-4 py-2 font-semibold text-white hover:bg-(--primary-hover) focus:outline-none focus:ring-2 focus:ring-(--primary-color) focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? "Loading..." : "Login"}
           </button>

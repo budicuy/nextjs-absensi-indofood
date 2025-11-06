@@ -49,6 +49,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const isValidPassword = await bcrypt.compare(password, user.password);
 
           if (isValidPassword) {
+            // Update last login timestamp
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { lastLogin: new Date() },
+            });
+
             // Jika valid, kembalikan objek user yang akan disimpan di JWT/session
             return {
               id: user.id,

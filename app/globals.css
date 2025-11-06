@@ -4,3 +4,12 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+/* Custom CSS Variables untuk konsistensi warna */
+:root {
+  --primary-color: oklch(0.7 0.15 160); /* emerald-500 */
+  --primary-hover: oklch(0.65 0.14 160); /* emerald-600 */
+  --primary-light: oklch(0.95 0.05 160); /* emerald-100 */
+  --primary-text: oklch(0.45 0.12 160); /* emerald-800 */
+  --primary-border: oklch(0.9 0.08 160); /* emerald-200 */
+}

@@ -59,7 +59,7 @@ export default function Topbar({
             <input
               type="text"
               placeholder="Search task"
-              className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-4 text-sm focus:border-(--primary-color) focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
             />
             <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs text-gray-500">
               ⌘ F
@@ -90,7 +90,7 @@ export default function Topbar({
                 {email || "user@indofood.com"}
               </p>
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-emerald-600 text-sm font-semibold text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-(--primary-color) to-(--primary-hover) text-sm font-semibold text-white">
               {username.charAt(0).toUpperCase()}
             </div>
           </div>

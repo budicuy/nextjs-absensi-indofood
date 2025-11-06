@@ -203,19 +203,19 @@ export default function Sidebar({
         <div className="flex h-16 items-center justify-between border-b border-gray-200 px-6">
           {!isMinimized && (
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-emerald-500 to-emerald-600 shadow-md">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-(--primary-color) to-(--primary-hover) shadow-md">
                 <Fingerprint className="h-6 w-6 text-white" />
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-bold text-gray-900">Absensi</span>
-                <span className="text-xs font-semibold text-emerald-600">
+                <span className="text-xs font-semibold text-(--primary-color)">
                   Indofood
                 </span>
               </div>
             </div>
           )}
           {isMinimized && (
-            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-emerald-500 to-emerald-600 shadow-md">
+            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-(--primary-color) to-(--primary-hover) shadow-md">
               <Fingerprint className="h-6 w-6 text-white" />
             </div>
           )}
@@ -282,7 +282,7 @@ export default function Sidebar({
                                   href={child.href}
                                   className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
                                     isActive
-                                      ? "bg-emerald-600 text-white shadow-sm font-semibold"
+                                      ? "bg-(--primary-color) text-white shadow-sm font-semibold"
                                       : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                                   }`}
                                 >
@@ -300,7 +300,7 @@ export default function Sidebar({
                       href={item.href || "#"}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-all ${
                         pathname === item.href
-                          ? "bg-emerald-600 text-white shadow-md hover:bg-emerald-700 hover:shadow-lg"
+                          ? "bg-(--primary-color) text-white shadow-md hover:bg-(--primary-hover) hover:shadow-lg"
                           : "text-gray-700 hover:bg-gray-100"
                       }`}
                       title={isMinimized ? item.title : ""}

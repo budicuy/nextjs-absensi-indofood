@@ -64,7 +64,7 @@ export default async function DashboardPage() {
             value="142"
             trend="+5%"
             icon={<CheckCircle2 className="h-6 w-6" />}
-            bgColor="bg-linear-to-br from-emerald-500 to-emerald-600"
+            bgColor="bg-linear-to-br from-(--primary-color) to-(--primary-hover)"
           />
           <StatCard
             title="Lembur Bulan Ini"
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
                 </h2>
                 <button
                   type="button"
-                  className="text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                  className="text-sm font-medium text-(--primary-color) hover:text-(--primary-hover)"
                 >
                   View all
                 </button>
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
                   title="Human Resources"
                   deadline="Active"
                   icon={<Users className="h-5 w-5" />}
-                  color="bg-emerald-500"
+                  color="bg-(--primary-color)"
                 />
                 <ProjectCard
                   title="Marketing"
@@ -142,8 +142,8 @@ export default async function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-(--primary-light)">
+                    <CheckCircle2 className="h-5 w-5 text-(--primary-color)" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900">

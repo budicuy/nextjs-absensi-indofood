@@ -14,7 +14,12 @@ const karyawanSchema = z.object({
     .max(16, "NIK maksimal 16 karakter"),
   nama: z.string().min(3, "Nama minimal 3 karakter"),
   alamat: z.string().optional(),
-  no_telp: z.string().min(10, "No. Telepon minimal 10 digit"),
+  no_telp: z
+    .string()
+    .regex(
+      /^08[0-9]+$/,
+      "No. Telepon harus diawali dengan 08 dan hanya berisi angka",
+    ),
   tanggal_masuk: z.string(),
   departemenId: z.string().min(1, "Departemen harus dipilih"),
   vendorId: z.string().min(1, "Vendor harus dipilih"),

@@ -22,10 +22,11 @@ enum Role {
 }
 
 model User {
-  id       String @id @default(cuid())
-  username String @unique
-  password String
-  role     Role   @default(KARYAWAN)
+  id        String    @id @default(cuid())
+  username  String    @unique
+  password  String
+  role      Role      @default(KARYAWAN)
+  lastLogin DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

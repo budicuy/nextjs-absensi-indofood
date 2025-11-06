@@ -171,7 +171,7 @@ export default function KaryawanModal({
                 minLength={3}
                 maxLength={16}
                 placeholder="Masukkan NIK (3-16 karakter)"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                 required
                 disabled={isSubmitting}
               />
@@ -192,7 +192,7 @@ export default function KaryawanModal({
                 value={formData.nama}
                 onChange={handleChange}
                 placeholder="Masukkan nama lengkap"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                 required
                 disabled={isSubmitting}
               />
@@ -213,10 +213,14 @@ export default function KaryawanModal({
                 value={formData.no_telp}
                 onChange={handleChange}
                 placeholder="08xxxxxxxxxx"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                pattern="08[0-9]+"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                 required
                 disabled={isSubmitting}
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Nomor telepon harus diawali dengan 08
+              </p>
             </div>
 
             {/* Tanggal Masuk */}
@@ -233,7 +237,7 @@ export default function KaryawanModal({
                 name="tanggal_masuk"
                 value={formData.tanggal_masuk}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                 required
                 disabled={isSubmitting}
               />
@@ -252,7 +256,7 @@ export default function KaryawanModal({
                 name="departemenId"
                 value={formData.departemenId}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                 required
                 disabled={isSubmitting}
               >
@@ -277,7 +281,7 @@ export default function KaryawanModal({
                 name="vendorId"
                 value={formData.vendorId}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                 required
                 disabled={isSubmitting}
               >
@@ -304,7 +308,7 @@ export default function KaryawanModal({
                 onChange={handleChange}
                 placeholder="Masukkan alamat lengkap"
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color) resize-none"
                 disabled={isSubmitting}
               />
             </div>
@@ -322,7 +326,7 @@ export default function KaryawanModal({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-(--primary-color) text-white rounded-lg hover:bg-(--primary-hover) transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Menyimpan..." : karyawan ? "Perbarui" : "Simpan"}
