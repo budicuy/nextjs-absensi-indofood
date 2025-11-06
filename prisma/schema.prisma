@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  HRD
+  KARYAWAN
+}
+
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  password String
+  role     Role   @default(KARYAWAN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Departemen {
+  id             String     @id @default(cuid())
+  slugDepartemen String     @unique
+  namaDepartemen String     @unique
+  Karyawan       Karyawan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Vendor {
+  id         String     @id @default(cuid())
+  slugVendor String     @unique
+  namaVendor String     @unique
+  alamat     String
+  noTelp     String     @unique
+  Karyawan   Karyawan[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AlasanLembur {
+  id          String @id @default(cuid())
+  description String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Karyawan {
+  id                   String   @id @default(cuid())
+  nik                  String   @unique
+  NamaLengkap          String
+  alamat               String
+  noTelp               String   @unique
+  tanggalMasukKaryawan DateTime
+
+  departemen   Departemen @relation(fields: [departemenId], references: [id])
+  departemenId String
+  vendor       Vendor     @relation(fields: [vendorId], references: [id])
+  vendorId     String
+
+  GajiPokok GajiPokok[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model JamKerja {
+  id        String   @id @default(cuid())
+  kodeShift String   @unique
+  jamMasuk  DateTime
+  jamPulang DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GajiPokok {
+  id         String  @id @default(cuid())
+  jumlahGaji Decimal
+
+  Karyawan   Karyawan? @relation(fields: [karyawanId], references: [id])
+  karyawanId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
