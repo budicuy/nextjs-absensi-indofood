@@ -1,5 +1,6 @@
 "use client";
 
+import type { AlasanLembur } from "@prisma/client";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -7,7 +8,6 @@ import {
     createAlasanLembur,
     updateAlasanLembur,
 } from "@/app/actions/alasanLembur";
-import type { AlasanLembur } from "@/lib/generated/prisma/models/AlasanLembur";
 
 type Props = {
     isOpen: boolean;

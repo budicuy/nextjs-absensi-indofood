@@ -1,10 +1,10 @@
 "use client";
 
+import type { JamKerja } from "@prisma/client";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createJamKerja, updateJamKerja } from "@/app/actions/jamKerja";
-import type { JamKerja } from "@/lib/generated/prisma/models/JamKerja";
 
 type Props = {
     isOpen: boolean;

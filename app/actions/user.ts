@@ -1,9 +1,9 @@
 "use server";
 
+import type { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import type { Role } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 // Validation schema

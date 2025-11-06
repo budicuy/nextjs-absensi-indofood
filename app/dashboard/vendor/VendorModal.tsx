@@ -1,10 +1,10 @@
 "use client";
 
+import type { Vendor } from "@prisma/client";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createVendor, updateVendor } from "@/app/actions/vendor";
-import type { Vendor } from "@/lib/generated/prisma/models/Vendor";
 
 type Props = {
     isOpen: boolean;

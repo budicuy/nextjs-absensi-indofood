@@ -1,13 +1,13 @@
 // Auth configuration dengan Prisma (untuk route handlers)
+
 import * as bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { ZodError, z } from "zod";
 import { authConfig } from "./auth.config";
-import { PrismaClient } from "./generated/prisma/client";
+import { prisma } from "./prisma";
 
 // Gunakan Prisma Client
-const prisma = new PrismaClient();
 
 // Definisikan Skema Validasi Input Login (Type-Safe!)
 const LoginSchema = z.object({
