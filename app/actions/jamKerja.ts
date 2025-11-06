@@ -2,9 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { PrismaClient } from "@/lib/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 // Validation schema
 const jamKerjaSchema = z

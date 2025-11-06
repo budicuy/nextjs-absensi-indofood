@@ -2,9 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { PrismaClient } from "@/lib/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 // Validation schema
 const departemenSchema = z.object({
@@ -17,6 +15,13 @@ const departemenSchema = z.object({
 export async function getDepartemen() {
     try {
         const departemen = await prisma.departemen.findMany({
+            select: {
+                id: true,
+                namaDepartemen: true,
+                slugDepartemen: true,
+                createdAt: true,
+                updatedAt: true,
+            },
             orderBy: {
                 namaDepartemen: "asc",
             },
@@ -25,6 +30,7 @@ export async function getDepartemen() {
         return departemen.map((d) => ({
             id: d.id,
             namaDepartemen: d.namaDepartemen,
+            nama: d.namaDepartemen, // alias for compatibility with karyawan
             slugDepartemen: d.slugDepartemen,
             createdAt: d.createdAt,
             updatedAt: d.updatedAt,

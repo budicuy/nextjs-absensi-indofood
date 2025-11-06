@@ -2,9 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { PrismaClient } from "@/lib/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 // Validation schema
 const vendorSchema = z.object({
@@ -29,6 +27,15 @@ const vendorSchema = z.object({
 export async function getVendor() {
     try {
         const vendor = await prisma.vendor.findMany({
+            select: {
+                id: true,
+                namaVendor: true,
+                alamat: true,
+                noTelp: true,
+                slugVendor: true,
+                createdAt: true,
+                updatedAt: true,
+            },
             orderBy: {
                 namaVendor: "asc",
             },
@@ -37,6 +44,7 @@ export async function getVendor() {
         return vendor.map((v) => ({
             id: v.id,
             namaVendor: v.namaVendor,
+            nama: v.namaVendor, // alias for compatibility with karyawan
             alamat: v.alamat,
             noTelp: v.noTelp,
             slugVendor: v.slugVendor,
@@ -59,21 +67,24 @@ export async function createVendor(formData: FormData) {
 
         const validated = vendorSchema.parse(data);
 
-        // Check if vendor name already exists
-        const existingName = await prisma.vendor.findUnique({
-            where: { namaVendor: validated.namaVendor },
+        // Check if vendor name or phone already exists in a single query
+        const existing = await prisma.vendor.findFirst({
+            where: {
+                OR: [
+                    { namaVendor: validated.namaVendor },
+                    { noTelp: validated.noTelp },
+                ],
+            },
+            select: {
+                namaVendor: true,
+                noTelp: true,
+            },
         });
 
-        if (existingName) {
-            return { success: false, error: "Nama vendor sudah terdaftar" };
-        }
-
-        // Check if phone already exists
-        const existingPhone = await prisma.vendor.findUnique({
-            where: { noTelp: validated.noTelp },
-        });
-
-        if (existingPhone) {
+        if (existing) {
+            if (existing.namaVendor === validated.namaVendor) {
+                return { success: false, error: "Nama vendor sudah terdaftar" };
+            }
             return { success: false, error: "No. Telepon sudah terdaftar" };
         }
 
@@ -113,27 +124,29 @@ export async function updateVendor(id: number, formData: FormData) {
 
         const validated = vendorSchema.parse(data);
 
-        // Check if vendor name already exists (exclude current record)
-        const existingName = await prisma.vendor.findFirst({
+        // Check if vendor name or phone already exists (exclude current record) in a single query
+        const existing = await prisma.vendor.findFirst({
             where: {
-                namaVendor: validated.namaVendor,
-                NOT: { id },
+                AND: [
+                    { NOT: { id } },
+                    {
+                        OR: [
+                            { namaVendor: validated.namaVendor },
+                            { noTelp: validated.noTelp },
+                        ],
+                    },
+                ],
+            },
+            select: {
+                namaVendor: true,
+                noTelp: true,
             },
         });
 
-        if (existingName) {
-            return { success: false, error: "Nama vendor sudah terdaftar" };
-        }
-
-        // Check if phone already exists (exclude current record)
-        const existingPhone = await prisma.vendor.findFirst({
-            where: {
-                noTelp: validated.noTelp,
-                NOT: { id },
-            },
-        });
-
-        if (existingPhone) {
+        if (existing) {
+            if (existing.namaVendor === validated.namaVendor) {
+                return { success: false, error: "Nama vendor sudah terdaftar" };
+            }
             return { success: false, error: "No. Telepon sudah terdaftar" };
         }
 

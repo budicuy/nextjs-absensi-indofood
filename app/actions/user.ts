@@ -3,9 +3,8 @@
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { PrismaClient, type Role } from "@/lib/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import type { Role } from "@/lib/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
 
 // Validation schema
 const userSchema = z.object({

@@ -2,9 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { PrismaClient } from "@/lib/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 // Validation schema
 const karyawanSchema = z.object({
@@ -80,48 +78,15 @@ export async function getKaryawan() {
     }
 }
 
+// Wrapper functions to avoid duplication while maintaining "use server" compatibility
 export async function getDepartemen() {
-    try {
-        const departemen = await prisma.departemen.findMany({
-            select: {
-                id: true,
-                namaDepartemen: true,
-            },
-            orderBy: {
-                namaDepartemen: "asc",
-            },
-        });
-
-        return departemen.map((d) => ({
-            id: d.id,
-            nama: d.namaDepartemen,
-        }));
-    } catch (error) {
-        console.error("Error fetching departemen:", error);
-        return [];
-    }
+    const { getDepartemen: getDept } = await import("./departemen");
+    return getDept();
 }
 
 export async function getVendor() {
-    try {
-        const vendor = await prisma.vendor.findMany({
-            select: {
-                id: true,
-                namaVendor: true,
-            },
-            orderBy: {
-                namaVendor: "asc",
-            },
-        });
-
-        return vendor.map((v) => ({
-            id: v.id,
-            nama: v.namaVendor,
-        }));
-    } catch (error) {
-        console.error("Error fetching vendor:", error);
-        return [];
-    }
+    const { getVendor: getVend } = await import("./vendor");
+    return getVend();
 }
 
 export async function createKaryawan(formData: FormData) {
@@ -138,21 +103,21 @@ export async function createKaryawan(formData: FormData) {
 
         const validated = karyawanSchema.parse(data);
 
-        // Check if NIK already exists
-        const existingNIK = await prisma.karyawan.findUnique({
-            where: { nik: validated.nik },
+        // Check if NIK or phone already exists in a single query
+        const existing = await prisma.karyawan.findFirst({
+            where: {
+                OR: [{ nik: validated.nik }, { noTelp: validated.no_telp }],
+            },
+            select: {
+                nik: true,
+                noTelp: true,
+            },
         });
 
-        if (existingNIK) {
-            return { success: false, error: "NIK sudah terdaftar" };
-        }
-
-        // Check if phone already exists
-        const existingPhone = await prisma.karyawan.findUnique({
-            where: { noTelp: validated.no_telp },
-        });
-
-        if (existingPhone) {
+        if (existing) {
+            if (existing.nik === validated.nik) {
+                return { success: false, error: "NIK sudah terdaftar" };
+            }
             return { success: false, error: "No. Telepon sudah terdaftar" };
         }
 
@@ -193,27 +158,30 @@ export async function updateKaryawan(id: number, formData: FormData) {
 
         const validated = karyawanSchema.parse(data);
 
-        // Check if NIK already exists (exclude current record)
-        const existingNIK = await prisma.karyawan.findFirst({
+        // Check if NIK or phone already exists (exclude current record) in a single query
+        const existing = await prisma.karyawan.findFirst({
             where: {
-                nik: validated.nik,
-                NOT: { id },
+                AND: [
+                    { NOT: { id } },
+                    {
+                        OR: [
+                            { nik: validated.nik },
+                            { noTelp: validated.no_telp },
+                        ],
+                    },
+                ],
+            },
+            select: {
+                nik: true,
+                noTelp: true,
             },
         });
 
-        if (existingNIK) {
-            return { success: false, error: "NIK sudah terdaftar" };
-        }
 
-        // Check if phone already exists (exclude current record)
-        const existingPhone = await prisma.karyawan.findFirst({
-            where: {
-                noTelp: validated.no_telp,
-                NOT: { id },
-            },
-        });
-
-        if (existingPhone) {
+        if (existing) {
+            if (existing.nik === validated.nik) {
+                return { success: false, error: "NIK sudah terdaftar" };
+            }
             return { success: false, error: "No. Telepon sudah terdaftar" };
         }
 
