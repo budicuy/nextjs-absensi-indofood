@@ -4,19 +4,12 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createDepartemen, updateDepartemen } from "@/app/actions/departemen";
-
-type Departemen = {
-    id: number;
-    namaDepartemen: string;
-    slugDepartemen: string;
-    createdAt: Date;
-    updatedAt: Date;
-};
+import type { DepartemenModel } from "@/lib/generated/prisma/models/Departemen";
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: Departemen) => void;
-    departemen: Departemen | null;
+    onClose: (updatedData?: DepartemenModel) => void;
+    departemen: DepartemenModel | null;
 };
 
 export default function DepartemenModal({
@@ -58,7 +51,7 @@ export default function DepartemenModal({
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as Departemen);
+                onClose({} as DepartemenModel);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }

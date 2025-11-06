@@ -19,23 +19,15 @@ import {
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { deleteUser, getUser } from "@/app/actions/user";
+import type { UserDisplay } from "@/types";
 import UserModal from "./UserModal";
 
-type UserType = {
-    id: number;
-    username: string;
-    role: "SUPER_ADMIN" | "ADMIN" | "HRD" | "KARYAWAN";
-    lastLogin: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
-};
-
 type Props = {
-    initialUsers: UserType[];
+    initialUsers: UserDisplay[];
 };
 
 export default function UserClient({ initialUsers }: Props) {
-    const [userList, setUserList] = useState<UserType[]>(initialUsers);
+    const [userList, setUserList] = useState<UserDisplay[]>(initialUsers);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedRole, setSelectedRole] = useState<string>("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
@@ -45,7 +37,7 @@ export default function UserClient({ initialUsers }: Props) {
         id: number;
         username: string;
     } | null>(null);
-    const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+    const [selectedUser, setSelectedUser] = useState<UserDisplay | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
 
     // Filter users berdasarkan search query dan role
@@ -70,12 +62,12 @@ export default function UserClient({ initialUsers }: Props) {
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (user: UserType) => {
+    const handleEditClick = (user: UserDisplay) => {
         setSelectedUser(user);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async (user: UserType) => {
+    const handleDeleteClick = async (user: UserDisplay) => {
         setUserToDelete({ id: user.id, username: user.username });
         setIsDeleteModalOpen(true);
     };
@@ -167,7 +159,7 @@ export default function UserClient({ initialUsers }: Props) {
         return colors[index];
     };
 
-    const handleModalClose = async (updatedData?: UserType) => {
+    const handleModalClose = async (updatedData?: UserDisplay) => {
         setIsModalOpen(false);
         setSelectedUser(null);
 

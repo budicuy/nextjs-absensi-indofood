@@ -16,33 +16,17 @@ import {
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { deleteKaryawan, getKaryawan } from "@/app/actions/karyawan";
+import type {
+    DepartemenOption,
+    KaryawanWithRelations,
+    VendorOption,
+} from "@/types";
 import KaryawanModal from "./KaryawanModal";
 
-type Karyawan = {
-    id: number;
-    nik: string;
-    nama: string;
-    alamat: string | null;
-    no_telp: string;
-    tanggal_masuk: Date;
-    departemen: { id: number; nama: string } | null;
-    vendor: { id: number; nama: string } | null;
-};
-
-type Departemen = {
-    id: number;
-    nama: string;
-};
-
-type Vendor = {
-    id: number;
-    nama: string;
-};
-
 type Props = {
-    initialKaryawan: Karyawan[];
-    departemenList: Departemen[];
-    vendorList: Vendor[];
+    initialKaryawan: KaryawanWithRelations[];
+    departemenList: DepartemenOption[];
+    vendorList: VendorOption[];
 };
 
 export default function KaryawanClient({
@@ -51,7 +35,7 @@ export default function KaryawanClient({
     vendorList,
 }: Props) {
     const [karyawanList, setKaryawanList] =
-        useState<Karyawan[]>(initialKaryawan);
+        useState<KaryawanWithRelations[]>(initialKaryawan);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedDepartemen, setSelectedDepartemen] = useState<string>("");
     const [selectedVendor, setSelectedVendor] = useState<string>("");
@@ -62,9 +46,8 @@ export default function KaryawanClient({
         id: number;
         nama: string;
     } | null>(null);
-    const [selectedKaryawan, setSelectedKaryawan] = useState<Karyawan | null>(
-        null,
-    );
+    const [selectedKaryawan, setSelectedKaryawan] =
+        useState<KaryawanWithRelations | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
 
     // Filter karyawan berdasarkan search query, departemen, dan vendor
@@ -101,12 +84,12 @@ export default function KaryawanClient({
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (karyawan: Karyawan) => {
+    const handleEditClick = (karyawan: KaryawanWithRelations) => {
         setSelectedKaryawan(karyawan);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async (karyawan: Karyawan) => {
+    const handleDeleteClick = async (karyawan: KaryawanWithRelations) => {
         setKaryawanToDelete({ id: karyawan.id, nama: karyawan.nama });
         setIsDeleteModalOpen(true);
     };
@@ -200,7 +183,7 @@ export default function KaryawanClient({
         return colors[index];
     };
 
-    const handleModalClose = async (updatedData?: Karyawan) => {
+    const handleModalClose = async (updatedData?: KaryawanWithRelations) => {
         setIsModalOpen(false);
         setSelectedKaryawan(null);
 

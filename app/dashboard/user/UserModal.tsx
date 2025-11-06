@@ -4,20 +4,12 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createUser, updateUser } from "@/app/actions/user";
-
-type UserType = {
-    id: number;
-    username: string;
-    role: "SUPER_ADMIN" | "ADMIN" | "HRD" | "KARYAWAN";
-    lastLogin: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
-};
+import type { UserDisplay } from "@/types";
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: UserType) => void;
-    user: UserType | null;
+    onClose: (updatedData?: UserDisplay) => void;
+    user: UserDisplay | null;
 };
 
 export default function UserModal({ isOpen, onClose, user }: Props) {
@@ -67,7 +59,7 @@ export default function UserModal({ isOpen, onClose, user }: Props) {
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as UserType);
+                onClose({} as UserDisplay);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }

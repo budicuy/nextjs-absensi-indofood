@@ -4,34 +4,18 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createKaryawan, updateKaryawan } from "@/app/actions/karyawan";
-
-type Karyawan = {
-    id: number;
-    nik: string;
-    nama: string;
-    alamat: string | null;
-    no_telp: string;
-    tanggal_masuk: Date;
-    departemen: { id: number; nama: string } | null;
-    vendor: { id: number; nama: string } | null;
-};
-
-type Departemen = {
-    id: number;
-    nama: string;
-};
-
-type Vendor = {
-    id: number;
-    nama: string;
-};
+import type {
+    DepartemenOption,
+    KaryawanWithRelations,
+    VendorOption,
+} from "@/types";
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: Karyawan) => void;
-    karyawan: Karyawan | null;
-    departemenList: Departemen[];
-    vendorList: Vendor[];
+    onClose: (updatedData?: KaryawanWithRelations) => void;
+    karyawan: KaryawanWithRelations | null;
+    departemenList: DepartemenOption[];
+    vendorList: VendorOption[];
 };
 
 export default function KaryawanModal({
@@ -101,7 +85,7 @@ export default function KaryawanModal({
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as Karyawan);
+                onClose({} as KaryawanWithRelations);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }

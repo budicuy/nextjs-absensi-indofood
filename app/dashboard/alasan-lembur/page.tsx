@@ -14,7 +14,7 @@ export default async function AlasanLemburPage() {
 
     return (
         <DashboardLayout username={session.user.username}>
-            <AlasanLemburClient initialAlasanLembur={alasanLemburData} />
+            <AlasanLemburClient initialData={alasanLemburData} />
         </DashboardLayout>
     );
 }

@@ -18,22 +18,16 @@ import {
     deleteAlasanLembur,
     getAlasanLembur,
 } from "@/app/actions/alasanLembur";
+import type { AlasanLemburModel } from "@/lib/generated/prisma/models/AlasanLembur";
 import AlasanLemburModal from "./AlasanLemburModal";
 
-type AlasanLemburType = {
-    id: number;
-    description: string;
-    createdAt: Date;
-    updatedAt: Date;
-};
-
 type Props = {
-    initialAlasanLembur: AlasanLemburType[];
+    initialData: AlasanLemburModel[];
 };
 
-export default function AlasanLemburClient({ initialAlasanLembur }: Props) {
+export default function AlasanLemburClient({ initialData }: Props) {
     const [alasanLemburList, setAlasanLemburList] =
-        useState<AlasanLemburType[]>(initialAlasanLembur);
+        useState<AlasanLemburModel[]>(initialData);
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,7 +37,7 @@ export default function AlasanLemburClient({ initialAlasanLembur }: Props) {
         description: string;
     } | null>(null);
     const [selectedAlasanLembur, setSelectedAlasanLembur] =
-        useState<AlasanLemburType | null>(null);
+        useState<AlasanLemburModel | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
 
     // Filter alasan lembur berdasarkan search query
@@ -69,12 +63,12 @@ export default function AlasanLemburClient({ initialAlasanLembur }: Props) {
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (alasan: AlasanLemburType) => {
+    const handleEditClick = (alasan: AlasanLemburModel) => {
         setSelectedAlasanLembur(alasan);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async (alasan: AlasanLemburType) => {
+    const handleDeleteClick = async (alasan: AlasanLemburModel) => {
         setAlasanLemburToDelete({
             id: alasan.id,
             description: alasan.description,
@@ -153,7 +147,7 @@ export default function AlasanLemburClient({ initialAlasanLembur }: Props) {
 
     // Get initials from description
 
-    const handleModalClose = async (updatedData?: AlasanLemburType) => {
+    const handleModalClose = async (updatedData?: AlasanLemburModel) => {
         setIsModalOpen(false);
         setSelectedAlasanLembur(null);
 
