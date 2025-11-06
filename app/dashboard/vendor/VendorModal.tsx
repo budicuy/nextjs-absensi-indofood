@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { createVendor, updateVendor } from "@/app/actions/vendor";
 
 type Vendor = {
-    id: string;
+    id: number;
     namaVendor: string;
     alamat: string;
     noTelp: string;

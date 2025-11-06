@@ -1,4 +1,4 @@
-// Auth configuration untuk middleware (Edge Runtime compatible)
+// Auth configuration untuk proxy (Edge Runtime compatible)
 import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
@@ -23,5 +23,5 @@ export const authConfig = {
             return true;
         },
     },
-    providers: [], // Add providers with an empty array for the middleware
+    providers: [], // Add providers with an empty array for the proxy
 } satisfies NextAuthConfig;

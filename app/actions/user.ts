@@ -102,7 +102,7 @@ export async function createUser(formData: FormData) {
     }
 }
 
-export async function updateUser(id: string, formData: FormData) {
+export async function updateUser(id: number, formData: FormData) {
     try {
         const data = {
             username: formData.get("username") as string,
@@ -158,7 +158,7 @@ export async function updateUser(id: string, formData: FormData) {
     }
 }
 
-export async function deleteUser(id: string) {
+export async function deleteUser(id: number) {
     try {
         await prisma.user.delete({
             where: { id },

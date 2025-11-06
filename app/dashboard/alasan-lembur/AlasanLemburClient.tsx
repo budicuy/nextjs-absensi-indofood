@@ -2,9 +2,9 @@
 
 import {
     AlertTriangle,
-    Building2,
     ChevronLeft,
     ChevronRight,
+    FileText,
     ListFilter,
     Pencil,
     Plus,
@@ -14,39 +14,41 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { deleteDepartemen, getDepartemen } from "@/app/actions/departemen";
-import DepartemenModal from "./DepartemenModal";
+import {
+    deleteAlasanLembur,
+    getAlasanLembur,
+} from "@/app/actions/alasanLembur";
+import AlasanLemburModal from "./AlasanLemburModal";
 
-type Departemen = {
+type AlasanLemburType = {
     id: number;
-    namaDepartemen: string;
-    slugDepartemen: string;
+    description: string;
     createdAt: Date;
     updatedAt: Date;
 };
 
 type Props = {
-    initialDepartemen: Departemen[];
+    initialAlasanLembur: AlasanLemburType[];
 };
 
-export default function DepartemenClient({ initialDepartemen }: Props) {
-    const [departemenList, setDepartemenList] =
-        useState<Departemen[]>(initialDepartemen);
+export default function AlasanLemburClient({ initialAlasanLembur }: Props) {
+    const [alasanLemburList, setAlasanLemburList] =
+        useState<AlasanLemburType[]>(initialAlasanLembur);
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [departemenToDelete, setDepartemenToDelete] = useState<{
+    const [alasanLemburToDelete, setAlasanLemburToDelete] = useState<{
         id: number;
-        namaDepartemen: string;
+        description: string;
     } | null>(null);
-    const [selectedDepartemen, setSelectedDepartemen] =
-        useState<Departemen | null>(null);
+    const [selectedAlasanLembur, setSelectedAlasanLembur] =
+        useState<AlasanLemburType | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Filter departemen berdasarkan search query
-    const filteredDepartemen = departemenList.filter((departemen) => {
-        const matchesSearch = departemen.namaDepartemen
+    // Filter alasan lembur berdasarkan search query
+    const filteredAlasanLembur = alasanLemburList.filter((alasan) => {
+        const matchesSearch = alasan.description
             .toLowerCase()
             .includes(searchQuery.toLowerCase());
 
@@ -54,62 +56,81 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
     });
 
     // Pagination
-    const totalPages = Math.ceil(filteredDepartemen.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredAlasanLembur.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentDepartemen = filteredDepartemen.slice(startIndex, endIndex);
+    const currentAlasanLembur = filteredAlasanLembur.slice(
+        startIndex,
+        endIndex,
+    );
 
     const handleAddClick = () => {
-        setSelectedDepartemen(null);
+        setSelectedAlasanLembur(null);
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (departemen: Departemen) => {
-        setSelectedDepartemen(departemen);
+    const handleEditClick = (alasan: AlasanLemburType) => {
+        setSelectedAlasanLembur(alasan);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async (departemen: Departemen) => {
-        setDepartemenToDelete({
-            id: departemen.id,
-            namaDepartemen: departemen.namaDepartemen,
+    const handleDeleteClick = async (alasan: AlasanLemburType) => {
+        setAlasanLemburToDelete({
+            id: alasan.id,
+            description: alasan.description,
         });
         setIsDeleteModalOpen(true);
     };
 
     const confirmDelete = async () => {
-        if (!departemenToDelete) return;
+        if (!alasanLemburToDelete) return;
 
-        const result = await deleteDepartemen(departemenToDelete.id);
+        const result = await deleteAlasanLembur(alasanLemburToDelete.id);
         if (result.success) {
-            toast.success(result.message || "Departemen berhasil dihapus");
-            setDepartemenList(
-                departemenList.filter((d) => d.id !== departemenToDelete.id),
+            toast.success(result.message || "Alasan lembur berhasil dihapus");
+            setAlasanLemburList(
+                alasanLemburList.filter(
+                    (a) => a.id !== alasanLemburToDelete.id,
+                ),
             );
         } else {
-            toast.error(result.error || "Gagal menghapus departemen");
+            toast.error(result.error || "Gagal menghapus alasan lembur");
         }
 
         setIsDeleteModalOpen(false);
-        setDepartemenToDelete(null);
+        setAlasanLemburToDelete(null);
     };
 
     const cancelDelete = () => {
         setIsDeleteModalOpen(false);
-        setDepartemenToDelete(null);
+        setAlasanLemburToDelete(null);
     };
 
-    // Get initials from departemen name
-    const getInitials = (namaDepartemen: string) => {
-        const words = namaDepartemen.trim().split(" ");
-        if (words.length === 1) {
-            return words[0].substring(0, 2).toUpperCase();
-        }
-        return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    // Get description color based on description
+    const getDescriptionColor = (description: string) => {
+        const colors = [
+            "bg-blue-100 text-blue-800 border-blue-200",
+            "bg-purple-100 text-purple-800 border-purple-200",
+            "bg-pink-100 text-pink-800 border-pink-200",
+            "bg-indigo-100 text-indigo-800 border-indigo-200",
+            "bg-cyan-100 text-cyan-800 border-cyan-200",
+            "bg-teal-100 text-teal-800 border-teal-200",
+            "bg-emerald-100 text-emerald-800 border-emerald-200",
+            "bg-lime-100 text-lime-800 border-lime-200",
+            "bg-amber-100 text-amber-800 border-amber-200",
+            "bg-orange-100 text-orange-800 border-orange-200",
+            "bg-rose-100 text-rose-800 border-rose-200",
+        ];
+        const index =
+            description
+                .split("")
+                .reduce((acc, char) => acc + char.charCodeAt(0), 0) %
+            colors.length;
+        return colors[index];
     };
 
-    // Generate avatar color based on departemen name
-    const getAvatarColor = (namaDepartemen: string) => {
+    // Get avatar color based on description
+    const getAvatarColor = (description: string) => {
         const colors = [
             "bg-blue-500",
             "bg-purple-500",
@@ -123,22 +144,24 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
             "bg-rose-500",
         ];
         const index =
-            namaDepartemen
+            description
                 .split("")
                 .reduce((acc, char) => acc + char.charCodeAt(0), 0) %
             colors.length;
         return colors[index];
     };
 
-    const handleModalClose = async (updatedData?: Departemen) => {
+    // Get initials from description
+
+    const handleModalClose = async (updatedData?: AlasanLemburType) => {
         setIsModalOpen(false);
-        setSelectedDepartemen(null);
+        setSelectedAlasanLembur(null);
 
         if (updatedData) {
             // Refresh data setelah create/update dengan memanggil server action
             try {
-                const freshData = await getDepartemen();
-                setDepartemenList(freshData);
+                const freshData = await getAlasanLembur();
+                setAlasanLemburList(freshData);
             } catch (error) {
                 console.error("Error refreshing data:", error);
                 // Fallback ke reload jika fetch gagal
@@ -154,10 +177,10 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-white">
-                            Data Departemen
+                            Data Alasan Lembur
                         </h1>
                         <p className="text-(--primary-light) mt-2">
-                            Kelola data departemen Absensi Indofood
+                            Kelola data alasan lembur sistem Absensi Indofood
                         </p>
                     </div>
                     <button
@@ -167,7 +190,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                     >
                         <Plus className="w-5 h-5" />
                         <span className="hidden sm:inline">
-                            Tambah Departemen
+                            Tambah Alasan Lembur
                         </span>
                         <span className="sm:hidden">Tambah</span>
                     </button>
@@ -181,7 +204,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                     {/* Search Bar */}
                     <div className="mb-4">
                         <label
-                            htmlFor="search-departemen"
+                            htmlFor="search-alasan-lembur"
                             className="block text-sm font-semibold text-gray-700 mb-2"
                         >
                             Pencarian
@@ -190,8 +213,8 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                             <input
                                 type="text"
-                                id="search-departemen"
-                                placeholder="Cari berdasarkan nama departemen..."
+                                id="search-alasan-lembur"
+                                placeholder="Cari berdasarkan deskripsi..."
                                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color) focus:border-transparent transition-all bg-white"
                                 value={searchQuery}
                                 onChange={(e) => {
@@ -202,7 +225,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                         </div>
                     </div>
 
-                    {/* Filters Row */}
+                    {/* Items Per Page */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label
@@ -236,10 +259,10 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                 {/* Table */}
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-(--primary-color) border-b border-(--primary-hover)">
+                        <thead className="bg-(--primary-color) border-b border-(--primary-border)">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                    Nama Departemen
+                                    Deskripsi
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
                                     Tanggal Dibuat
@@ -253,45 +276,40 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {currentDepartemen.length === 0 ? (
+                            {currentAlasanLembur.length === 0 ? (
                                 <tr>
                                     <td
                                         colSpan={4}
                                         className="px-6 py-8 text-center text-gray-500"
                                     >
-                                        Tidak ada data departemen
+                                        Tidak ada data alasan lembur
                                     </td>
                                 </tr>
                             ) : (
-                                currentDepartemen.map((departemen) => (
+                                currentAlasanLembur.map((alasan) => (
                                     <tr
-                                        key={departemen.id}
+                                        key={alasan.id}
                                         className="hover:bg-gray-50 transition-colors"
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <div className="flex items-center gap-3">
                                                 <div
-                                                    className={`flex items-center justify-center w-10 h-10 rounded-full ${getAvatarColor(
-                                                        departemen.namaDepartemen,
-                                                    )} text-white font-bold text-sm shadow-sm`}
+                                                    className={`flex items-center justify-center w-10 h-10 rounded-full ${getAvatarColor(alasan.description)} text-white font-bold text-sm shadow-sm`}
                                                 >
-                                                    {getInitials(
-                                                        departemen.namaDepartemen,
-                                                    )}
+                                                    <FileText className="w-5 h-5" />
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-gray-900 font-medium">
-                                                        {
-                                                            departemen.namaDepartemen
-                                                        }
+                                                <div className="flex-1">
+                                                    <span
+                                                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getDescriptionColor(alasan.description)}`}
+                                                    >
+                                                        {alasan.description}
                                                     </span>
-                                                    <Building2 className="w-4 h-4 text-gray-400" />
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                             {new Date(
-                                                departemen.createdAt,
+                                                alasan.createdAt,
                                             ).toLocaleDateString("id-ID", {
                                                 weekday: "long",
                                                 day: "numeric",
@@ -303,7 +321,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                             {new Date(
-                                                departemen.updatedAt,
+                                                alasan.updatedAt,
                                             ).toLocaleDateString("id-ID", {
                                                 weekday: "long",
                                                 day: "numeric",
@@ -318,9 +336,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                                                 <button
                                                     type="button"
                                                     onClick={() =>
-                                                        handleEditClick(
-                                                            departemen,
-                                                        )
+                                                        handleEditClick(alasan)
                                                     }
                                                     className="p-2 bg-amber-500 text-white hover:bg-amber-600 rounded-lg transition-colors border border-amber-600 shadow-sm"
                                                     title="Edit"
@@ -331,7 +347,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                                                     type="button"
                                                     onClick={() =>
                                                         handleDeleteClick(
-                                                            departemen,
+                                                            alasan,
                                                         )
                                                     }
                                                     className="p-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors border border-red-700 shadow-sm"
@@ -353,8 +369,8 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                     <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="text-sm text-gray-600">
                             Menampilkan {startIndex + 1} -{" "}
-                            {Math.min(endIndex, filteredDepartemen.length)} dari{" "}
-                            {filteredDepartemen.length} departemen
+                            {Math.min(endIndex, filteredAlasanLembur.length)}{" "}
+                            dari {filteredAlasanLembur.length} alasan lembur
                         </div>
                         <div className="flex gap-1">
                             {/* Previous Button */}
@@ -453,14 +469,14 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
             </div>
 
             {/* Modal */}
-            <DepartemenModal
+            <AlasanLemburModal
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
-                departemen={selectedDepartemen}
+                alasanLembur={selectedAlasanLembur}
             />
 
             {/* Delete Confirmation Modal */}
-            {isDeleteModalOpen && departemenToDelete && (
+            {isDeleteModalOpen && alasanLemburToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     {/* Backdrop */}
                     <button
@@ -494,10 +510,10 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                         {/* Content */}
                         <div className="p-6">
                             <p className="text-gray-700 mb-2">
-                                Apakah Anda yakin ingin menghapus departemen:
+                                Apakah Anda yakin ingin menghapus alasan lembur:
                             </p>
                             <p className="text-lg font-semibold text-gray-900 mb-4">
-                                {departemenToDelete.namaDepartemen}
+                                {alasanLemburToDelete.description}
                             </p>
                             <p className="text-sm text-gray-600">
                                 Data yang sudah dihapus tidak dapat

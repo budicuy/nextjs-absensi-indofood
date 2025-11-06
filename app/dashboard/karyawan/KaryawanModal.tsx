@@ -6,23 +6,23 @@ import toast from "react-hot-toast";
 import { createKaryawan, updateKaryawan } from "@/app/actions/karyawan";
 
 type Karyawan = {
-    id: string;
+    id: number;
     nik: string;
     nama: string;
     alamat: string | null;
     no_telp: string;
     tanggal_masuk: Date;
-    departemen: { id: string; nama: string };
-    vendor: { id: string; nama: string };
+    departemen: { id: number; nama: string } | null;
+    vendor: { id: number; nama: string } | null;
 };
 
 type Departemen = {
-    id: string;
+    id: number;
     nama: string;
 };
 
 type Vendor = {
-    id: string;
+    id: number;
     nama: string;
 };
 
@@ -64,8 +64,8 @@ export default function KaryawanModal({
                     tanggal_masuk: new Date(karyawan.tanggal_masuk)
                         .toISOString()
                         .split("T")[0],
-                    departemenId: karyawan.departemen.id.toString(),
-                    vendorId: karyawan.vendor.id.toString(),
+                    departemenId: karyawan.departemen?.id.toString() || "",
+                    vendorId: karyawan.vendor?.id.toString() || "",
                 });
             } else {
                 setFormData({
@@ -74,8 +74,8 @@ export default function KaryawanModal({
                     alamat: "",
                     no_telp: "",
                     tanggal_masuk: new Date().toISOString().split("T")[0],
-                    departemenId: departemenList[0]?.id || "",
-                    vendorId: vendorList[0]?.id || "",
+                    departemenId: departemenList[0]?.id.toString() || "",
+                    vendorId: vendorList[0]?.id.toString() || "",
                 });
             }
         }

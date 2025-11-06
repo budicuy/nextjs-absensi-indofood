@@ -2,9 +2,9 @@
 
 import {
     AlertTriangle,
-    Building2,
     ChevronLeft,
     ChevronRight,
+    Clock,
     ListFilter,
     Pencil,
     Plus,
@@ -14,39 +14,40 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { deleteDepartemen, getDepartemen } from "@/app/actions/departemen";
-import DepartemenModal from "./DepartemenModal";
+import { deleteJamKerja, getJamKerja } from "@/app/actions/jamKerja";
+import JamKerjaModal from "./JamKerjaModal";
 
-type Departemen = {
+type JamKerjaType = {
     id: number;
-    namaDepartemen: string;
-    slugDepartemen: string;
+    kodeShift: string;
+    jamMasuk: Date;
+    jamPulang: Date;
     createdAt: Date;
     updatedAt: Date;
 };
 
 type Props = {
-    initialDepartemen: Departemen[];
+    initialJamKerja: JamKerjaType[];
 };
 
-export default function DepartemenClient({ initialDepartemen }: Props) {
-    const [departemenList, setDepartemenList] =
-        useState<Departemen[]>(initialDepartemen);
+export default function JamKerjaClient({ initialJamKerja }: Props) {
+    const [jamKerjaList, setJamKerjaList] =
+        useState<JamKerjaType[]>(initialJamKerja);
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [departemenToDelete, setDepartemenToDelete] = useState<{
+    const [jamKerjaToDelete, setJamKerjaToDelete] = useState<{
         id: number;
-        namaDepartemen: string;
+        kodeShift: string;
     } | null>(null);
-    const [selectedDepartemen, setSelectedDepartemen] =
-        useState<Departemen | null>(null);
+    const [selectedJamKerja, setSelectedJamKerja] =
+        useState<JamKerjaType | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Filter departemen berdasarkan search query
-    const filteredDepartemen = departemenList.filter((departemen) => {
-        const matchesSearch = departemen.namaDepartemen
+    // Filter jam kerja berdasarkan search query
+    const filteredJamKerja = jamKerjaList.filter((jamKerja) => {
+        const matchesSearch = jamKerja.kodeShift
             .toLowerCase()
             .includes(searchQuery.toLowerCase());
 
@@ -54,62 +55,59 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
     });
 
     // Pagination
-    const totalPages = Math.ceil(filteredDepartemen.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredJamKerja.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentDepartemen = filteredDepartemen.slice(startIndex, endIndex);
+    const currentJamKerja = filteredJamKerja.slice(startIndex, endIndex);
 
     const handleAddClick = () => {
-        setSelectedDepartemen(null);
+        setSelectedJamKerja(null);
         setIsModalOpen(true);
     };
 
-    const handleEditClick = (departemen: Departemen) => {
-        setSelectedDepartemen(departemen);
+    const handleEditClick = (jamKerja: JamKerjaType) => {
+        setSelectedJamKerja(jamKerja);
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async (departemen: Departemen) => {
-        setDepartemenToDelete({
-            id: departemen.id,
-            namaDepartemen: departemen.namaDepartemen,
-        });
+    const handleDeleteClick = async (jamKerja: JamKerjaType) => {
+        setJamKerjaToDelete({ id: jamKerja.id, kodeShift: jamKerja.kodeShift });
         setIsDeleteModalOpen(true);
     };
 
     const confirmDelete = async () => {
-        if (!departemenToDelete) return;
+        if (!jamKerjaToDelete) return;
 
-        const result = await deleteDepartemen(departemenToDelete.id);
+        const result = await deleteJamKerja(jamKerjaToDelete.id);
         if (result.success) {
-            toast.success(result.message || "Departemen berhasil dihapus");
-            setDepartemenList(
-                departemenList.filter((d) => d.id !== departemenToDelete.id),
+            toast.success(result.message || "Jam kerja berhasil dihapus");
+            setJamKerjaList(
+                jamKerjaList.filter((jk) => jk.id !== jamKerjaToDelete.id),
             );
         } else {
-            toast.error(result.error || "Gagal menghapus departemen");
+            toast.error(result.error || "Gagal menghapus jam kerja");
         }
 
         setIsDeleteModalOpen(false);
-        setDepartemenToDelete(null);
+        setJamKerjaToDelete(null);
     };
 
     const cancelDelete = () => {
         setIsDeleteModalOpen(false);
-        setDepartemenToDelete(null);
+        setJamKerjaToDelete(null);
     };
 
-    // Get initials from departemen name
-    const getInitials = (namaDepartemen: string) => {
-        const words = namaDepartemen.trim().split(" ");
-        if (words.length === 1) {
-            return words[0].substring(0, 2).toUpperCase();
-        }
-        return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    // Format time to HH:MM
+    const formatTime = (date: Date) => {
+        return new Date(date).toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        });
     };
 
-    // Generate avatar color based on departemen name
-    const getAvatarColor = (namaDepartemen: string) => {
+    // Get shift color based on kode shift
+    const getShiftColor = (kodeShift: string) => {
         const colors = [
             "bg-blue-500",
             "bg-purple-500",
@@ -123,22 +121,22 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
             "bg-rose-500",
         ];
         const index =
-            namaDepartemen
+            kodeShift
                 .split("")
                 .reduce((acc, char) => acc + char.charCodeAt(0), 0) %
             colors.length;
         return colors[index];
     };
 
-    const handleModalClose = async (updatedData?: Departemen) => {
+    const handleModalClose = async (updatedData?: JamKerjaType) => {
         setIsModalOpen(false);
-        setSelectedDepartemen(null);
+        setSelectedJamKerja(null);
 
         if (updatedData) {
             // Refresh data setelah create/update dengan memanggil server action
             try {
-                const freshData = await getDepartemen();
-                setDepartemenList(freshData);
+                const freshData = await getJamKerja();
+                setJamKerjaList(freshData);
             } catch (error) {
                 console.error("Error refreshing data:", error);
                 // Fallback ke reload jika fetch gagal
@@ -154,10 +152,10 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-white">
-                            Data Departemen
+                            Data Jam Kerja
                         </h1>
                         <p className="text-(--primary-light) mt-2">
-                            Kelola data departemen Absensi Indofood
+                            Kelola data jam kerja sistem Absensi Indofood
                         </p>
                     </div>
                     <button
@@ -167,7 +165,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                     >
                         <Plus className="w-5 h-5" />
                         <span className="hidden sm:inline">
-                            Tambah Departemen
+                            Tambah Jam Kerja
                         </span>
                         <span className="sm:hidden">Tambah</span>
                     </button>
@@ -181,7 +179,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                     {/* Search Bar */}
                     <div className="mb-4">
                         <label
-                            htmlFor="search-departemen"
+                            htmlFor="search-jam-kerja"
                             className="block text-sm font-semibold text-gray-700 mb-2"
                         >
                             Pencarian
@@ -190,8 +188,8 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                             <input
                                 type="text"
-                                id="search-departemen"
-                                placeholder="Cari berdasarkan nama departemen..."
+                                id="search-jam-kerja"
+                                placeholder="Cari berdasarkan kode shift..."
                                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color) focus:border-transparent transition-all bg-white"
                                 value={searchQuery}
                                 onChange={(e) => {
@@ -202,7 +200,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                         </div>
                     </div>
 
-                    {/* Filters Row */}
+                    {/* Items Per Page */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label
@@ -236,10 +234,16 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                 {/* Table */}
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-(--primary-color) border-b border-(--primary-hover)">
+                        <thead className="bg-(--primary-color) border-b border-(--primary-border)">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                    Nama Departemen
+                                    Kode Shift
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                    Jam Masuk
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                                    Jam Pulang
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
                                     Tanggal Dibuat
@@ -253,45 +257,58 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {currentDepartemen.length === 0 ? (
+                            {currentJamKerja.length === 0 ? (
                                 <tr>
                                     <td
-                                        colSpan={4}
+                                        colSpan={6}
                                         className="px-6 py-8 text-center text-gray-500"
                                     >
-                                        Tidak ada data departemen
+                                        Tidak ada data jam kerja
                                     </td>
                                 </tr>
                             ) : (
-                                currentDepartemen.map((departemen) => (
+                                currentJamKerja.map((jamKerja) => (
                                     <tr
-                                        key={departemen.id}
+                                        key={jamKerja.id}
                                         className="hover:bg-gray-50 transition-colors"
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <div className="flex items-center gap-3">
                                                 <div
-                                                    className={`flex items-center justify-center w-10 h-10 rounded-full ${getAvatarColor(
-                                                        departemen.namaDepartemen,
+                                                    className={`flex items-center justify-center w-10 h-10 rounded-full ${getShiftColor(
+                                                        jamKerja.kodeShift,
                                                     )} text-white font-bold text-sm shadow-sm`}
                                                 >
-                                                    {getInitials(
-                                                        departemen.namaDepartemen,
+                                                    <Clock className="w-5 h-5" />
+                                                </div>
+                                                <span className="text-gray-900 font-medium">
+                                                    {jamKerja.kodeShift}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                <span className="text-gray-900 font-medium">
+                                                    {formatTime(
+                                                        jamKerja.jamMasuk,
                                                     )}
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-gray-900 font-medium">
-                                                        {
-                                                            departemen.namaDepartemen
-                                                        }
-                                                    </span>
-                                                    <Building2 className="w-4 h-4 text-gray-400" />
-                                                </div>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                                <span className="text-gray-900 font-medium">
+                                                    {formatTime(
+                                                        jamKerja.jamPulang,
+                                                    )}
+                                                </span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                             {new Date(
-                                                departemen.createdAt,
+                                                jamKerja.createdAt,
                                             ).toLocaleDateString("id-ID", {
                                                 weekday: "long",
                                                 day: "numeric",
@@ -303,7 +320,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                             {new Date(
-                                                departemen.updatedAt,
+                                                jamKerja.updatedAt,
                                             ).toLocaleDateString("id-ID", {
                                                 weekday: "long",
                                                 day: "numeric",
@@ -319,7 +336,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                                                     type="button"
                                                     onClick={() =>
                                                         handleEditClick(
-                                                            departemen,
+                                                            jamKerja,
                                                         )
                                                     }
                                                     className="p-2 bg-amber-500 text-white hover:bg-amber-600 rounded-lg transition-colors border border-amber-600 shadow-sm"
@@ -331,7 +348,7 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                                                     type="button"
                                                     onClick={() =>
                                                         handleDeleteClick(
-                                                            departemen,
+                                                            jamKerja,
                                                         )
                                                     }
                                                     className="p-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors border border-red-700 shadow-sm"
@@ -353,8 +370,8 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                     <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="text-sm text-gray-600">
                             Menampilkan {startIndex + 1} -{" "}
-                            {Math.min(endIndex, filteredDepartemen.length)} dari{" "}
-                            {filteredDepartemen.length} departemen
+                            {Math.min(endIndex, filteredJamKerja.length)} dari{" "}
+                            {filteredJamKerja.length} jam kerja
                         </div>
                         <div className="flex gap-1">
                             {/* Previous Button */}
@@ -453,14 +470,14 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
             </div>
 
             {/* Modal */}
-            <DepartemenModal
+            <JamKerjaModal
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
-                departemen={selectedDepartemen}
+                jamKerja={selectedJamKerja}
             />
 
             {/* Delete Confirmation Modal */}
-            {isDeleteModalOpen && departemenToDelete && (
+            {isDeleteModalOpen && jamKerjaToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     {/* Backdrop */}
                     <button
@@ -494,10 +511,10 @@ export default function DepartemenClient({ initialDepartemen }: Props) {
                         {/* Content */}
                         <div className="p-6">
                             <p className="text-gray-700 mb-2">
-                                Apakah Anda yakin ingin menghapus departemen:
+                                Apakah Anda yakin ingin menghapus jam kerja:
                             </p>
                             <p className="text-lg font-semibold text-gray-900 mb-4">
-                                {departemenToDelete.namaDepartemen}
+                                {jamKerjaToDelete.kodeShift}
                             </p>
                             <p className="text-sm text-gray-600">
                                 Data yang sudah dihapus tidak dapat

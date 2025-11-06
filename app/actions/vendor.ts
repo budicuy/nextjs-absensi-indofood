@@ -103,7 +103,7 @@ export async function createVendor(formData: FormData) {
     }
 }
 
-export async function updateVendor(id: string, formData: FormData) {
+export async function updateVendor(id: number, formData: FormData) {
     try {
         const data = {
             namaVendor: formData.get("namaVendor") as string,
@@ -164,7 +164,7 @@ export async function updateVendor(id: string, formData: FormData) {
     }
 }
 
-export async function deleteVendor(id: string) {
+export async function deleteVendor(id: number) {
     try {
         // Check if vendor has related karyawan
         const karyawanCount = await prisma.karyawan.count({

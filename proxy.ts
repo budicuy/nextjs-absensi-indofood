@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import { authConfig } from "./lib/auth.config";
 
-// Gunakan config tanpa Prisma untuk middleware (Edge Runtime compatible)
+// Gunakan config tanpa Prisma untuk proxy (Edge Runtime compatible)
 export default NextAuth(authConfig).auth;
 
 export const config = {

@@ -22,7 +22,7 @@ import { deleteUser, getUser } from "@/app/actions/user";
 import UserModal from "./UserModal";
 
 type UserType = {
-    id: string;
+    id: number;
     username: string;
     role: "SUPER_ADMIN" | "ADMIN" | "HRD" | "KARYAWAN";
     lastLogin: Date | null;
@@ -42,7 +42,7 @@ export default function UserClient({ initialUsers }: Props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState<{
-        id: string;
+        id: number;
         username: string;
     } | null>(null);
     const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
@@ -372,8 +372,9 @@ export default function UserClient({ initialUsers }: Props) {
                                                     ).toLocaleDateString(
                                                         "id-ID",
                                                         {
-                                                            day: "2-digit",
-                                                            month: "2-digit",
+                                                            weekday: "long",
+                                                            day: "numeric",
+                                                            month: "long",
                                                             year: "numeric",
                                                             hour: "2-digit",
                                                             minute: "2-digit",
@@ -389,8 +390,9 @@ export default function UserClient({ initialUsers }: Props) {
                                                 {new Date(
                                                     user.createdAt,
                                                 ).toLocaleDateString("id-ID", {
-                                                    day: "2-digit",
-                                                    month: "2-digit",
+                                                    weekday: "long",
+                                                    day: "numeric",
+                                                    month: "long",
                                                     year: "numeric",
                                                     hour: "2-digit",
                                                     minute: "2-digit",
@@ -400,8 +402,9 @@ export default function UserClient({ initialUsers }: Props) {
                                                 {new Date(
                                                     user.updatedAt,
                                                 ).toLocaleDateString("id-ID", {
-                                                    day: "2-digit",
-                                                    month: "2-digit",
+                                                    weekday: "long",
+                                                    day: "numeric",
+                                                    month: "long",
                                                     year: "numeric",
                                                     hour: "2-digit",
                                                     minute: "2-digit",

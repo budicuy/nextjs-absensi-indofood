@@ -21,8 +21,8 @@ const karyawanSchema = z.object({
             "No. Telepon harus diawali dengan 08 dan hanya berisi angka",
         ),
     tanggal_masuk: z.string(),
-    departemenId: z.string().min(1, "Departemen harus dipilih"),
-    vendorId: z.string().min(1, "Vendor harus dipilih"),
+    departemenId: z.number().min(1, "Departemen harus dipilih"),
+    vendorId: z.number().min(1, "Vendor harus dipilih"),
 });
 
 export async function getKaryawan() {
@@ -61,14 +61,18 @@ export async function getKaryawan() {
             alamat: k.alamat,
             no_telp: k.noTelp,
             tanggal_masuk: k.tanggalMasukKaryawan,
-            departemen: {
-                id: k.departemen.id,
-                nama: k.departemen.namaDepartemen,
-            },
-            vendor: {
-                id: k.vendor.id,
-                nama: k.vendor.namaVendor,
-            },
+            departemen: k.departemen
+                ? {
+                      id: k.departemen.id,
+                      nama: k.departemen.namaDepartemen,
+                  }
+                : null,
+            vendor: k.vendor
+                ? {
+                      id: k.vendor.id,
+                      nama: k.vendor.namaVendor,
+                  }
+                : null,
         }));
     } catch (error) {
         console.error("Error fetching karyawan:", error);
@@ -128,8 +132,8 @@ export async function createKaryawan(formData: FormData) {
             alamat: formData.get("alamat") as string,
             no_telp: formData.get("no_telp") as string,
             tanggal_masuk: formData.get("tanggal_masuk") as string,
-            departemenId: formData.get("departemenId") as string,
-            vendorId: formData.get("vendorId") as string,
+            departemenId: parseInt(formData.get("departemenId") as string, 10),
+            vendorId: parseInt(formData.get("vendorId") as string, 10),
         };
 
         const validated = karyawanSchema.parse(data);
@@ -175,7 +179,7 @@ export async function createKaryawan(formData: FormData) {
     }
 }
 
-export async function updateKaryawan(id: string, formData: FormData) {
+export async function updateKaryawan(id: number, formData: FormData) {
     try {
         const data = {
             nik: formData.get("nik") as string,
@@ -183,8 +187,8 @@ export async function updateKaryawan(id: string, formData: FormData) {
             alamat: formData.get("alamat") as string,
             no_telp: formData.get("no_telp") as string,
             tanggal_masuk: formData.get("tanggal_masuk") as string,
-            departemenId: formData.get("departemenId") as string,
-            vendorId: formData.get("vendorId") as string,
+            departemenId: parseInt(formData.get("departemenId") as string, 10),
+            vendorId: parseInt(formData.get("vendorId") as string, 10),
         };
 
         const validated = karyawanSchema.parse(data);
@@ -237,7 +241,7 @@ export async function updateKaryawan(id: string, formData: FormData) {
     }
 }
 
-export async function deleteKaryawan(id: string) {
+export async function deleteKaryawan(id: number) {
     try {
         await prisma.karyawan.delete({
             where: { id },

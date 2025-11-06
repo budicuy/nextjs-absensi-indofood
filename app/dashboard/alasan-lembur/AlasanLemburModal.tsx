@@ -3,46 +3,48 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { createDepartemen, updateDepartemen } from "@/app/actions/departemen";
+import {
+    createAlasanLembur,
+    updateAlasanLembur,
+} from "@/app/actions/alasanLembur";
 
-type Departemen = {
+type AlasanLemburType = {
     id: number;
-    namaDepartemen: string;
-    slugDepartemen: string;
+    description: string;
     createdAt: Date;
     updatedAt: Date;
 };
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: Departemen) => void;
-    departemen: Departemen | null;
+    onClose: (updatedData?: AlasanLemburType) => void;
+    alasanLembur: AlasanLemburType | null;
 };
 
-export default function DepartemenModal({
+export default function AlasanLemburModal({
     isOpen,
     onClose,
-    departemen,
+    alasanLembur,
 }: Props) {
     const [formData, setFormData] = useState({
-        namaDepartemen: "",
+        description: "",
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Reset form ketika modal dibuka/ditutup atau departemen berubah
+    // Reset form ketika modal dibuka/ditutup atau alasanLembur berubah
     useEffect(() => {
         if (isOpen) {
-            if (departemen) {
+            if (alasanLembur) {
                 setFormData({
-                    namaDepartemen: departemen.namaDepartemen,
+                    description: alasanLembur.description,
                 });
             } else {
                 setFormData({
-                    namaDepartemen: "",
+                    description: "",
                 });
             }
         }
-    }, [isOpen, departemen]);
+    }, [isOpen, alasanLembur]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -50,15 +52,15 @@ export default function DepartemenModal({
 
         try {
             const formDataObj = new FormData();
-            formDataObj.append("namaDepartemen", formData.namaDepartemen);
+            formDataObj.append("description", formData.description);
 
-            const result = departemen
-                ? await updateDepartemen(departemen.id, formDataObj)
-                : await createDepartemen(formDataObj);
+            const result = alasanLembur
+                ? await updateAlasanLembur(alasanLembur.id, formDataObj)
+                : await createAlasanLembur(formDataObj);
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as Departemen);
+                onClose({} as AlasanLemburType);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }
@@ -96,7 +98,9 @@ export default function DepartemenModal({
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
                     <h2 className="text-xl font-bold text-gray-900">
-                        {departemen ? "Edit Departemen" : "Tambah Departemen"}
+                        {alasanLembur
+                            ? "Edit Alasan Lembur"
+                            : "Tambah Alasan Lembur"}
                     </h2>
                     <button
                         type="button"
@@ -110,31 +114,40 @@ export default function DepartemenModal({
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                        {/* Nama Departemen */}
+                    <div className="space-y-4">
+                        {/* Description */}
                         <div>
                             <label
-                                htmlFor="namaDepartemen"
+                                htmlFor="description"
                                 className="block text-sm font-medium text-gray-700 mb-1"
                             >
-                                Nama Departemen{" "}
+                                Deskripsi Alasan Lembur{" "}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="text"
-                                id="namaDepartemen"
-                                name="namaDepartemen"
-                                value={formData.namaDepartemen}
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={formData.description}
                                 onChange={handleChange}
                                 minLength={3}
-                                maxLength={100}
-                                placeholder="Masukkan nama departemen (3-100 karakter)"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
+                                maxLength={200}
+                                rows={4}
+                                placeholder="Masukkan deskripsi alasan lembur (3-200 karakter)"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color) resize-none"
                                 required
                                 disabled={isSubmitting}
                             />
-                            <p className="mt-1 text-xs text-gray-500">
-                                Slug akan dibuat otomatis dari nama departemen
+                            <div className="mt-1 text-xs text-gray-500">
+                                {formData.description.length}/200 karakter
+                            </div>
+                        </div>
+
+                        {/* Info */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <p className="text-sm text-blue-800">
+                                <strong>Catatan:</strong> Deskripsi alasan
+                                lembur akan digunakan sebagai pilihan saat
+                                pengajuan lembur karyawan.
                             </p>
                         </div>
                     </div>
@@ -156,7 +169,7 @@ export default function DepartemenModal({
                         >
                             {isSubmitting
                                 ? "Menyimpan..."
-                                : departemen
+                                : alasanLembur
                                   ? "Perbarui"
                                   : "Simpan"}
                         </button>

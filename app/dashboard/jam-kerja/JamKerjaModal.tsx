@@ -3,49 +3,57 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { createUser, updateUser } from "@/app/actions/user";
+import { createJamKerja, updateJamKerja } from "@/app/actions/jamKerja";
 
-type UserType = {
+type JamKerjaType = {
     id: number;
-    username: string;
-    role: "SUPER_ADMIN" | "ADMIN" | "HRD" | "KARYAWAN";
-    lastLogin: Date | null;
+    kodeShift: string;
+    jamMasuk: Date;
+    jamPulang: Date;
     createdAt: Date;
     updatedAt: Date;
 };
 
 type Props = {
     isOpen: boolean;
-    onClose: (updatedData?: UserType) => void;
-    user: UserType | null;
+    onClose: (updatedData?: JamKerjaType) => void;
+    jamKerja: JamKerjaType | null;
 };
 
-export default function UserModal({ isOpen, onClose, user }: Props) {
+export default function JamKerjaModal({ isOpen, onClose, jamKerja }: Props) {
     const [formData, setFormData] = useState({
-        username: "",
-        password: "",
-        role: "KARYAWAN" as "SUPER_ADMIN" | "ADMIN" | "HRD" | "KARYAWAN",
+        kodeShift: "",
+        jamMasuk: "",
+        jamPulang: "",
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Reset form ketika modal dibuka/ditutup atau user berubah
+    // Reset form ketika modal dibuka/ditutup atau jamKerja berubah
     useEffect(() => {
         if (isOpen) {
-            if (user) {
+            if (jamKerja) {
+                // Format time to HH:MM for input
+                const formatTimeForInput = (date: Date) => {
+                    const d = new Date(date);
+                    const hours = d.getHours().toString().padStart(2, "0");
+                    const minutes = d.getMinutes().toString().padStart(2, "0");
+                    return `${hours}:${minutes}`;
+                };
+
                 setFormData({
-                    username: user.username,
-                    password: "",
-                    role: user.role,
+                    kodeShift: jamKerja.kodeShift,
+                    jamMasuk: formatTimeForInput(jamKerja.jamMasuk),
+                    jamPulang: formatTimeForInput(jamKerja.jamPulang),
                 });
             } else {
                 setFormData({
-                    username: "",
-                    password: "",
-                    role: "KARYAWAN",
+                    kodeShift: "",
+                    jamMasuk: "",
+                    jamPulang: "",
                 });
             }
         }
-    }, [isOpen, user]);
+    }, [isOpen, jamKerja]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -53,21 +61,17 @@ export default function UserModal({ isOpen, onClose, user }: Props) {
 
         try {
             const formDataObj = new FormData();
-            formDataObj.append("username", formData.username);
-            formDataObj.append("role", formData.role);
+            formDataObj.append("kodeShift", formData.kodeShift);
+            formDataObj.append("jamMasuk", formData.jamMasuk);
+            formDataObj.append("jamPulang", formData.jamPulang);
 
-            // Only append password if it's provided (for update, password is optional)
-            if (formData.password) {
-                formDataObj.append("password", formData.password);
-            }
-
-            const result = user
-                ? await updateUser(user.id, formDataObj)
-                : await createUser(formDataObj);
+            const result = jamKerja
+                ? await updateJamKerja(jamKerja.id, formDataObj)
+                : await createJamKerja(formDataObj);
 
             if (result.success) {
                 toast.success(result.message || "Berhasil menyimpan data");
-                onClose({} as UserType);
+                onClose({} as JamKerjaType);
             } else {
                 toast.error(result.error || "Terjadi kesalahan");
             }
@@ -105,7 +109,7 @@ export default function UserModal({ isOpen, onClose, user }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
                     <h2 className="text-xl font-bold text-gray-900">
-                        {user ? "Edit User" : "Tambah User"}
+                        {jamKerja ? "Edit Jam Kerja" : "Tambah Jam Kerja"}
                     </h2>
                     <button
                         type="button"
@@ -120,85 +124,79 @@ export default function UserModal({ isOpen, onClose, user }: Props) {
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6">
                     <div className="space-y-4">
-                        {/* Username */}
+                        {/* Kode Shift */}
                         <div>
                             <label
-                                htmlFor="username"
+                                htmlFor="kodeShift"
                                 className="block text-sm font-medium text-gray-700 mb-1"
                             >
-                                Username <span className="text-red-500">*</span>
+                                Kode Shift{" "}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
-                                id="username"
-                                name="username"
-                                value={formData.username}
+                                id="kodeShift"
+                                name="kodeShift"
+                                value={formData.kodeShift}
                                 onChange={handleChange}
-                                minLength={3}
-                                maxLength={50}
-                                placeholder="Masukkan username (3-50 karakter)"
+                                minLength={1}
+                                maxLength={10}
+                                placeholder="Masukkan kode shift (contoh: PAGI, SIANG, MALAM)"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                                 required
                                 disabled={isSubmitting}
                             />
                         </div>
 
-                        {/* Password */}
+                        {/* Jam Masuk */}
                         <div>
                             <label
-                                htmlFor="password"
+                                htmlFor="jamMasuk"
                                 className="block text-sm font-medium text-gray-700 mb-1"
                             >
-                                Password{" "}
-                                {user ? (
-                                    <span className="text-gray-500 font-normal">
-                                        (kosongkan jika tidak ingin mengubah)
-                                    </span>
-                                ) : (
-                                    <span className="text-red-500">*</span>
-                                )}
+                                Jam Masuk{" "}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                minLength={6}
-                                maxLength={100}
-                                placeholder={
-                                    user
-                                        ? "Kosongkan jika tidak ingin mengubah"
-                                        : "Masukkan password (minimal 6 karakter)"
-                                }
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
-                                required={!user}
-                                disabled={isSubmitting}
-                            />
-                        </div>
-
-                        {/* Role */}
-                        <div>
-                            <label
-                                htmlFor="role"
-                                className="block text-sm font-medium text-gray-700 mb-1"
-                            >
-                                Role <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                id="role"
-                                name="role"
-                                value={formData.role}
+                                type="time"
+                                id="jamMasuk"
+                                name="jamMasuk"
+                                value={formData.jamMasuk}
                                 onChange={handleChange}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
                                 required
                                 disabled={isSubmitting}
+                            />
+                        </div>
+
+                        {/* Jam Pulang */}
+                        <div>
+                            <label
+                                htmlFor="jamPulang"
+                                className="block text-sm font-medium text-gray-700 mb-1"
                             >
-                                <option value="KARYAWAN">Karyawan</option>
-                                <option value="HRD">HRD</option>
-                                <option value="ADMIN">Admin</option>
-                                <option value="SUPER_ADMIN">Super Admin</option>
-                            </select>
+                                Jam Pulang{" "}
+                                <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="time"
+                                id="jamPulang"
+                                name="jamPulang"
+                                value={formData.jamPulang}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--primary-color)"
+                                required
+                                disabled={isSubmitting}
+                            />
+                        </div>
+
+                        {/* Info */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <p className="text-sm text-blue-800">
+                                <strong>Catatan:</strong> Pastikan jam pulang
+                                lebih besar dari jam masuk. Format waktu yang
+                                digunakan adalah 24 jam (HH:MM).
+                            </p>
                         </div>
                     </div>
 
@@ -219,7 +217,7 @@ export default function UserModal({ isOpen, onClose, user }: Props) {
                         >
                             {isSubmitting
                                 ? "Menyimpan..."
-                                : user
+                                : jamKerja
                                   ? "Perbarui"
                                   : "Simpan"}
                         </button>

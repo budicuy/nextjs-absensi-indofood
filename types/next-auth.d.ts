@@ -7,7 +7,7 @@ declare module "next-auth" {
 
     interface Session {
         user: {
-            id: string;
+            id: string; // Ubah dari number ke string untuk NextAuth
 
             username: string;
         } & DefaultSession["user"];
@@ -16,8 +16,7 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
     interface JWT {
-        id: string;
-
+        id: string; // Ubah dari number ke string untuk NextAuth
         username: string;
     }
 }

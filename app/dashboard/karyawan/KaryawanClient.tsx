@@ -19,23 +19,23 @@ import { deleteKaryawan, getKaryawan } from "@/app/actions/karyawan";
 import KaryawanModal from "./KaryawanModal";
 
 type Karyawan = {
-    id: string;
+    id: number;
     nik: string;
     nama: string;
     alamat: string | null;
     no_telp: string;
     tanggal_masuk: Date;
-    departemen: { id: string; nama: string };
-    vendor: { id: string; nama: string };
+    departemen: { id: number; nama: string } | null;
+    vendor: { id: number; nama: string } | null;
 };
 
 type Departemen = {
-    id: string;
+    id: number;
     nama: string;
 };
 
 type Vendor = {
-    id: string;
+    id: number;
     nama: string;
 };
 
@@ -59,7 +59,7 @@ export default function KaryawanClient({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [karyawanToDelete, setKaryawanToDelete] = useState<{
-        id: string;
+        id: number;
         nama: string;
     } | null>(null);
     const [selectedKaryawan, setSelectedKaryawan] = useState<Karyawan | null>(
@@ -72,16 +72,20 @@ export default function KaryawanClient({
         const matchesSearch =
             k.nik.toLowerCase().includes(searchQuery.toLowerCase()) ||
             k.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            k.departemen.nama
+            (k.departemen?.nama || "")
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase()) ||
-            k.vendor.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (k.vendor?.nama || "")
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
             k.no_telp.includes(searchQuery);
 
         const matchesDepartemen =
-            !selectedDepartemen || k.departemen.id === selectedDepartemen;
+            !selectedDepartemen ||
+            k.departemen?.id.toString() === selectedDepartemen;
 
-        const matchesVendor = !selectedVendor || k.vendor.id === selectedVendor;
+        const matchesVendor =
+            !selectedVendor || k.vendor?.id.toString() === selectedVendor;
 
         return matchesSearch && matchesDepartemen && matchesVendor;
     });
@@ -420,18 +424,30 @@ export default function KaryawanClient({
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                            <span
-                                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getDepartemenColor(karyawan.departemen.nama)}`}
-                                            >
-                                                {karyawan.departemen.nama}
-                                            </span>
+                                            {karyawan.departemen ? (
+                                                <span
+                                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getDepartemenColor(karyawan.departemen.nama)}`}
+                                                >
+                                                    {karyawan.departemen.nama}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-400 italic">
+                                                    -
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                            <span
-                                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getVendorColor(karyawan.vendor.nama)}`}
-                                            >
-                                                {karyawan.vendor.nama}
-                                            </span>
+                                            {karyawan.vendor ? (
+                                                <span
+                                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getVendorColor(karyawan.vendor.nama)}`}
+                                                >
+                                                    {karyawan.vendor.nama}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-400 italic">
+                                                    -
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                             {karyawan.no_telp}

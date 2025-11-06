@@ -60,7 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                         // Jika valid, kembalikan objek user yang akan disimpan di JWT/session
                         return {
-                            id: user.id,
+                            id: user.id.toString(), // Konversi number ke string untuk NextAuth
                             username: user.username,
                             // JANGAN pernah mengembalikan password/hash!
                         };
@@ -82,14 +82,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
-                token.id = user.id;
+                token.id = user.id; // ID sudah string dari authorize
                 token.username = user.username;
             }
             return token;
         },
         async session({ session, token }) {
             if (token) {
-                session.user.id = token.id as string;
+                session.user.id = token.id as string; // Pastikan tipe string
                 session.user.username = token.username as string;
             }
             return session;

@@ -76,7 +76,7 @@ export async function createDepartemen(formData: FormData) {
     }
 }
 
-export async function updateDepartemen(id: string, formData: FormData) {
+export async function updateDepartemen(id: number, formData: FormData) {
     try {
         const data = {
             namaDepartemen: formData.get("namaDepartemen") as string,
@@ -121,7 +121,7 @@ export async function updateDepartemen(id: string, formData: FormData) {
     }
 }
 
-export async function deleteDepartemen(id: string) {
+export async function deleteDepartemen(id: number) {
     try {
         // Check if departemen has related karyawan
         const karyawanCount = await prisma.karyawan.count({

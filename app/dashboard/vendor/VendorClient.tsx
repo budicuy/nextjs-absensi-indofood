@@ -19,7 +19,7 @@ import { deleteVendor, getVendor } from "@/app/actions/vendor";
 import VendorModal from "./VendorModal";
 
 type Vendor = {
-    id: string;
+    id: number;
     namaVendor: string;
     alamat: string;
     noTelp: string;
@@ -39,7 +39,7 @@ export default function VendorClient({ initialVendors }: Props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [vendorToDelete, setVendorToDelete] = useState<{
-        id: string;
+        id: number;
         namaVendor: string;
     } | null>(null);
     const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
