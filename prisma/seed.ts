@@ -98,17 +98,33 @@ async function main() {
         },
     ];
 
-    const vendor = await prisma.vendor.createMany({
-        data: vendors,
-        skipDuplicates: true,
-    });
-    console.log("✅ Vendors created:", vendor.count);
+    // Create vendors one by one to ensure they're created properly
+    let vendorCount = 0;
+    for (const vendorData of vendors) {
+        try {
+            await prisma.vendor.create({
+                data: vendorData,
+            });
+            vendorCount++;
+        } catch (error) {
+            console.error("❌ Error creating vendor:", error);
+        }
+    }
+    console.log("✅ Vendors created:", vendorCount);
 
-    const departemen = await prisma.departemen.createMany({
-        data: departemens,
-        skipDuplicates: true,
-    });
-    console.log("✅ Departemens created:", departemen.count);
+    // Create departments one by one to ensure they're created properly
+    let departemenCount = 0;
+    for (const departemenData of departemens) {
+        try {
+            await prisma.departemen.create({
+                data: departemenData,
+            });
+            departemenCount++;
+        } catch (error) {
+            console.error("❌ Error creating department:", error);
+        }
+    }
+    console.log("✅ Departemens created:", departemenCount);
 
     // Generate random karyawan data
     console.log("👥 Generating random karyawan...");
@@ -251,6 +267,14 @@ async function main() {
             allVendors[Math.floor(Math.random() * allVendors.length)];
         const randomDepartment =
             allDepartments[Math.floor(Math.random() * allDepartments.length)];
+
+        // Check if vendor and department exist before accessing their IDs
+        if (!randomVendor || !randomDepartment) {
+            console.error(
+                "❌ Vendor or department not found, skipping karyawan creation",
+            );
+            continue;
+        }
 
         karyawanData.push({
             nik,

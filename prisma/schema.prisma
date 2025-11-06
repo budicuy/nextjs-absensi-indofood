@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../lib/generated/prisma"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -32,7 +33,7 @@ model User {
 }
 
 model Departemen {
-  id             Int        @id @default(autoincrement()) @db.UnsignedTinyInt
+  id             Int        @id @default(autoincrement())
   slugDepartemen String     @unique
   namaDepartemen String     @unique
   Karyawan       Karyawan[]
@@ -41,7 +42,7 @@ model Departemen {
 }
 
 model Vendor {
-  id         Int        @id @default(autoincrement()) @db.UnsignedTinyInt
+  id         Int        @id @default(autoincrement())
   slugVendor String     @unique
   namaVendor String     @unique
   alamat     String
@@ -52,14 +53,14 @@ model Vendor {
 }
 
 model AlasanLembur {
-  id          Int      @id @default(autoincrement()) @db.UnsignedTinyInt
+  id          Int      @id @default(autoincrement())
   description String   @db.VarChar(200)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Karyawan {
-  id                   Int         @id @default(autoincrement()) @db.UnsignedInt
+  id                   Int         @id @default(autoincrement())
   nik                  String      @unique
   NamaLengkap          String
   alamat               String
@@ -67,15 +68,15 @@ model Karyawan {
   tanggalMasukKaryawan DateTime
   GajiPokok            GajiPokok[]
   vendor               Vendor?     @relation(fields: [vendorId], references: [id])
-  vendorId             Int?        @db.UnsignedTinyInt
+  vendorId             Int?
   departemen           Departemen? @relation(fields: [departemenId], references: [id])
-  departemenId         Int?        @db.UnsignedTinyInt
+  departemenId         Int?
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
 }
 
 model JamKerja {
-  id        Int      @id @default(autoincrement()) @db.UnsignedTinyInt
+  id        Int      @id @default(autoincrement())
   kodeShift String   @unique
   jamMasuk  DateTime @db.Time()
   jamPulang DateTime @db.Time()
@@ -84,10 +85,10 @@ model JamKerja {
 }
 
 model GajiPokok {
-  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  id         Int       @id @default(autoincrement())
   jumlahGaji Decimal
   karyawan   Karyawan? @relation(fields: [karyawanId], references: [id])
-  karyawanId Int?      @db.UnsignedInt
+  karyawanId Int?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }
