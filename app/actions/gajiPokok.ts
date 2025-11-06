@@ -10,12 +10,10 @@ const gajiPokokSchema = z.object({
         .string()
         .min(1, "Jumlah gaji wajib diisi")
         .refine(
-            (val) => !isNaN(Number(val)) && Number(val) > 0,
-            "Jumlah gaji harus berupa angka positif"
+            (val) => !Number.isNaN(Number(val)) && Number(val) > 0,
+            "Jumlah gaji harus berupa angka positif",
         ),
-    karyawanId: z
-        .number()
-        .min(1, "Karyawan harus dipilih"),
+    karyawanId: z.number().min(1, "Karyawan harus dipilih"),
 });
 
 export async function getGajiPokok() {
@@ -62,7 +60,7 @@ export async function getGajiPokok() {
 export async function getKaryawan() {
     const { getKaryawan: getKaryawanData } = await import("./karyawan");
     const karyawanData = await getKaryawanData();
-    
+
     // Transform to KaryawanOption format
     return karyawanData.map((k) => ({
         id: k.id,
@@ -86,7 +84,10 @@ export async function createGajiPokok(formData: FormData) {
         });
 
         if (existingGajiPokok) {
-            return { success: false, error: "Karyawan ini sudah memiliki gaji pokok" };
+            return {
+                success: false,
+                error: "Karyawan ini sudah memiliki gaji pokok",
+            };
         }
 
         await prisma.gajiPokok.create({
@@ -125,7 +126,10 @@ export async function updateGajiPokok(id: number, formData: FormData) {
         });
 
         if (existingGajiPokok) {
-            return { success: false, error: "Karyawan ini sudah memiliki gaji pokok" };
+            return {
+                success: false,
+                error: "Karyawan ini sudah memiliki gaji pokok",
+            };
         }
 
         await prisma.gajiPokok.update({

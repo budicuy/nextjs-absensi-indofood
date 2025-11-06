@@ -14,7 +14,7 @@ export type KaryawanWithRelations = {
 };
 
 // Type untuk User display (tanpa password)
-export type UserDisplay = Omit<UserModel, 'password'>;
+export type UserDisplay = Omit<UserModel, "password">;
 
 // Type untuk Departemen dengan alias
 export type DepartemenOption = {

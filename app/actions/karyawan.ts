@@ -177,7 +177,6 @@ export async function updateKaryawan(id: number, formData: FormData) {
             },
         });
 
-
         if (existing) {
             if (existing.nik === validated.nik) {
                 return { success: false, error: "NIK sudah terdaftar" };

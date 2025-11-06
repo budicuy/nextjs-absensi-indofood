@@ -35,9 +35,7 @@ export function getAvatarColor(name: string): string {
         "bg-rose-500",
     ];
     const index =
-        name
-            .split("")
-            .reduce((acc, char) => acc + char.charCodeAt(0), 0) %
+        name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) %
         colors.length;
     return colors[index];
 }

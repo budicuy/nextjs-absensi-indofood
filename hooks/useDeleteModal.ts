@@ -10,7 +10,9 @@ interface UseDeleteModalReturn {
     itemToDelete: DeleteItem | null;
     openDeleteModal: (item: DeleteItem) => void;
     closeDeleteModal: () => void;
-    confirmDelete: (deleteAction: (id: number) => Promise<void>) => Promise<void>;
+    confirmDelete: (
+        deleteAction: (id: number) => Promise<void>,
+    ) => Promise<void>;
 }
 
 /**

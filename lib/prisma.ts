@@ -13,7 +13,8 @@ export const prisma =
                       { level: "query", emit: "event" }, // Untuk melihat setiap SQL query yang dieksekusi
                       { level: "error", emit: "stdout" },
                       { level: "warn", emit: "stdout" },
-                  ] : ["error"],
+                  ]
+                : ["error"],
     });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
